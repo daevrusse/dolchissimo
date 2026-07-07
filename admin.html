@@ -357,6 +357,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
   <!-- MENÚ -->
   <div class="view" id="v-menu">
     <div class="cat-filter" id="cat-filter"></div>
+    <button class="btn-add-more" onclick="abrirModalNuevoPlato()">+ Agregar plato nuevo</button>
     <div class="card"><div class="card-title">CARTA — <span id="menu-count">—</span> productos activos</div><div id="menu-list"></div></div>
   </div>
 </div>
@@ -385,6 +386,30 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
     <div class="modal-btns">
       <button class="modal-cancel" onclick="cerrarModal()">Cancelar</button>
       <button class="modal-ok" onclick="guardarEdicion()">Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO PLATO -->
+<div class="modal-bottom" id="modal-nuevo" style="display:none">
+  <div class="modal-sheet">
+    <div class="modal-title">Agregar plato nuevo</div>
+    <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre *</label>
+    <input class="modal-input" type="text" id="np-nombre" placeholder="Ej: Capuccino">
+    <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Categoría *</label>
+    <input class="modal-input" type="text" id="np-categoria" placeholder="Ej: Bebidas Calientes" list="np-cat-list">
+    <datalist id="np-cat-list"></datalist>
+    <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Precio (S/) *</label>
+    <input class="modal-input" type="number" step="0.10" min="0" id="np-precio" placeholder="Ej: 12.50">
+    <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Emoji / Icono</label>
+    <input class="modal-input" type="text" id="np-icono" placeholder="☕" maxlength="4">
+    <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Descripción</label>
+    <input class="modal-input" type="text" id="np-descripcion" placeholder="Breve descripción del plato">
+    <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Solo disponible ciertos días (opcional)</label>
+    <input class="modal-input" type="text" id="np-dias" placeholder="Ej: Fines de semana">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="cerrarModalNuevo()">Cancelar</button>
+      <button class="modal-ok" onclick="guardarNuevoPlato()">Guardar plato</button>
     </div>
   </div>
 </div>
@@ -794,6 +819,37 @@ window.guardarEdicion=async()=>{
 // ── ACCIONES ──────────────────────────────────────────────────
 window.setCat=(c)=>{catActiva=c;renderCatFilter();renderMenu()}
 window.toggleMenu=async(id,n)=>{await supabase.from('menu_items').update({disponible:n}).eq('id',id);await cargarMenu()}
+window.abrirModalNuevoPlato=()=>{
+  document.getElementById('np-nombre').value=''
+  document.getElementById('np-categoria').value=''
+  document.getElementById('np-precio').value=''
+  document.getElementById('np-icono').value=''
+  document.getElementById('np-descripcion').value=''
+  document.getElementById('np-dias').value=''
+  const cats=[...new Set(menuItems.map(m=>m.categoria))]
+  document.getElementById('np-cat-list').innerHTML=cats.map(c=>`<option value="${c}"></option>`).join('')
+  document.getElementById('modal-nuevo').style.display='flex'
+}
+window.cerrarModalNuevo=()=>{document.getElementById('modal-nuevo').style.display='none'}
+window.guardarNuevoPlato=async()=>{
+  const nombre=document.getElementById('np-nombre').value.trim()
+  const categoria=document.getElementById('np-categoria').value.trim()
+  const precio=parseFloat(document.getElementById('np-precio').value)
+  const icono=document.getElementById('np-icono').value.trim()
+  const descripcion=document.getElementById('np-descripcion').value.trim()
+  const dias_disponible=document.getElementById('np-dias').value.trim()
+  if(!nombre||!categoria||isNaN(precio)||precio<=0){alert('Completa nombre, categoría y precio válido');return}
+  const{error}=await supabase.from('menu_items').insert({
+    nombre,categoria,precio,
+    icono: icono||'🍽️',
+    descripcion: descripcion||null,
+    dias_disponible: dias_disponible||null,
+    disponible:true
+  })
+  if(error){alert('Error al guardar: '+error.message);return}
+  cerrarModalNuevo()
+  await cargarMenu()
+}
 window.avanzar=async(id,n)=>{await supabase.from('pedidos').update({estado:n}).eq('id',id);await cargarTodo()}
 window.cancelar=async(id)=>{if(!confirm('¿Cancelar este pedido?'))return;await supabase.from('pedidos').update({estado:'cancelado'}).eq('id',id);await cargarTodo()}
 window.cerrarModal=()=>{document.getElementById('modal').style.display='none';editId=null}
