@@ -196,7 +196,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
 .loading-txt{text-align:center;padding:30px;color:#333;font-size:13px;}
 .realtime-badge{font-size:10px;color:#34d399;background:#051a0a;padding:2px 8px;border-radius:8px;border:0.5px solid #064e35;}
 .badge-live{font-size:10px;color:#2D6A4F;background:#0a1f17;padding:2px 8px;border-radius:8px;border:0.5px solid #440000;}
-</style>
+</style><link rel="stylesheet" href="daterangepicker.css">
 </head>
 <body>
 
@@ -414,7 +414,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
   </div>
 </div>
 
-<script type="module">
+<script src="daterangepicker.js"></script><script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 const supabase = createClient(
   'https://rsebinhkyijetmfwnugl.supabase.co',
@@ -422,7 +422,7 @@ const supabase = createClient(
 )
 
 let todoPedidos=[],menuItems=[],catActiva='Todo',editId=null,itemsEnEdicion=[]
-let fechaDesde='',fechaHasta='',periodoLabel='Hoy'
+let fechaDesde='',fechaHasta='',periodoLabel='Hoy';function initDateRangePickerUI(){var fr=document.querySelector('.filter-row');var dr=document.querySelector('.date-row');if(fr)fr.style.display='none';if(dr)dr.style.display='none';var c=document.createElement('div');c.id='drp-filtro';c.style.marginBottom='10px';if(fr&&fr.parentNode)fr.parentNode.insertBefore(c,fr);window.drp=new DateRangePicker('#drp-filtro',{locale:'es',start:todayPeru(),end:todayPeru(),onApply:function(r){fechaDesde=r.start+'T00:00:00';fechaHasta=r.end+'T23:59:59';periodoLabel=r.label;var fi=document.getElementById('filter-info');if(fi)fi.innerHTML='Mostrando: <span>'+r.label+'</span>';cargarTodo();}});}
 
 setInterval(()=>{const el=document.getElementById('clk');if(el)el.textContent=new Date().toLocaleTimeString('es-PE')},1000)
 
@@ -454,7 +454,7 @@ window.doLogin=async()=>{
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('auth-guard').style.display!=='none')window.doLogin()})
 
 // ── INIT APP ──────────────────────────────────────────────────
-function iniciarApp(){
+function iniciarApp(){initDateRangePickerUI();
   initFechas()
   cargarTodo()
   cargarMenu()
