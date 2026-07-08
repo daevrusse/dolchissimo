@@ -752,7 +752,7 @@ function renderMenu(){
   const f=catActiva==='Todo'?menuItems:menuItems.filter(m=>m.categoria===catActiva)
   document.getElementById('menu-list').innerHTML=f.map(p=>`
     <div class="menu-row">
-      <span class="m-icon">${p.icono||'🍽️'}</span>
+      <span class="m-icon">${p.emoji||'🍽️'}</span>
       <div style="flex:1;min-width:0;"><div class="m-name">${p.nombre}</div><div class="m-cat">${p.categoria}${p.dias_disponible?' · Solo '+p.dias_disponible:''}</div></div>
       <span class="m-price">S/${parseFloat(p.precio).toFixed(2)}</span>
       <button class="toggle ${p.disponible?'ton':'toff'}" onclick="toggleMenu('${p.id}',${!p.disponible})"></button>
@@ -841,7 +841,7 @@ window.guardarNuevoPlato=async()=>{
   if(!nombre||!categoria||isNaN(precio)||precio<=0){alert('Completa nombre, categoría y precio válido');return}
   const{error}=await supabase.from('menu_items').insert({
     nombre,categoria,precio,
-    icono: icono||'🍽️',
+    emoji: icono||'🍽️',
     descripcion: descripcion||null,
     dias_disponible: dias_disponible||null,
     disponible:true
