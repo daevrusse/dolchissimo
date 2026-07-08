@@ -262,7 +262,7 @@ window.render=()=>{
       const inCart=cart[p.id]>0
       const isPop=['Frappé / Milkshake','Bebidas Calientes','Dulces / Postres de Gallina'].includes(cat)
       html+=`<div class="item${inCart?' added':''}">
-        <div class="item-icon">${p.icono||'🍽️'}</div>
+        <div class="item-icon">${p.emoji||'🍽️'}</div>
         <div style="flex:1;min-width:0;">
           <div class="item-name">${p.nombre}${isPop?'<span class="badge b-pop">Popular</span>':''}${p.dias_disponible?`<span class="badge b-dia">${p.dias_disponible}</span>`:''}</div>
           ${p.descripcion?`<div class="item-desc">${p.descripcion}</div>`:''}
@@ -309,7 +309,7 @@ window.abrirModal=()=>{
       <div class="ci-row"><span class="ci-key">Mesa</span><span class="ci-val">${clienteMesa}</span></div>
     </div>
     ${items.map(it=>`<div class="mi-row">
-      <span class="mi-name">${it.icono||'🍽️'} ${it.nombre}</span>
+      <span class="mi-name">${it.emoji||'🍽️'} ${it.nombre}</span>
       <button class="mi-btn" onclick="cambiarQty('${it.id}',-1)">−</button>
       <span class="mi-qty">${it.qty}</span>
       <button class="mi-btn" onclick="cambiarQty('${it.id}',1)">+</button>
