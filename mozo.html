@@ -288,7 +288,7 @@ window.renderMenu=()=>{
   })
   document.getElementById('items-list').innerHTML=filtered.map(p=>`
     <div class="item${cart[p.id]?' added':''}">
-      <div class="item-icon">${p.icono||'🍽️'}</div>
+      <div class="item-icon">${p.emoji||'🍽️'}</div>
       <div style="flex:1;">
         <div class="item-name">${p.nombre}</div>
         ${p.descripcion?`<div class="item-desc">${p.descripcion}</div>`:''}
@@ -316,7 +316,7 @@ window.abrirCarrito=()=>{
   document.getElementById('modal-carrito-body').innerHTML=`
     <div class="modal-title">Confirmar pedido</div>
     ${items.map(it=>`<div class="mi-row">
-      <span class="mi-name">${it.icono||'🍽️'} ${it.nombre}</span>
+      <span class="mi-name">${it.emoji||'🍽️'} ${it.nombre}</span>
       <button class="mi-btn" onclick="cambiarQty('${it.id}',-1)">−</button>
       <span class="mi-qty">${it.qty}</span>
       <button class="mi-btn" onclick="cambiarQty('${it.id}',1)">+</button>
