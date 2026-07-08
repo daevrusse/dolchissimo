@@ -422,7 +422,7 @@ const supabase = createClient(
 )
 
 let todoPedidos=[],menuItems=[],catActiva='Todo',editId=null,itemsEnEdicion=[]
-let fechaDesde='',fechaHasta='',periodoLabel='Hoy';function initDateRangePickerUI(){var fr=document.querySelector('.filter-row');var dr=document.querySelector('.date-row');if(fr)fr.style.display='none';if(dr)dr.style.display='none';var c=document.createElement('div');c.id='drp-filtro';c.style.marginBottom='10px';if(fr&&fr.parentNode)fr.parentNode.insertBefore(c,fr);window.drp=new DateRangePicker('#drp-filtro',{locale:'es',start:todayPeru(),end:todayPeru(),onApply:function(r){fechaDesde=r.start+'T00:00:00';fechaHasta=r.end+'T23:59:59';periodoLabel=r.label;var fi=document.getElementById('filter-info');if(fi)fi.innerHTML='Mostrando: <span>'+r.label+'</span>';cargarTodo();}});}
+let fechaDesde='',fechaHasta='',periodoLabel='Hoy';function initDateRangePickerUI(){var fr=document.querySelector('.filter-row');var dr=document.querySelector('.date-row');if(fr)fr.style.display='none';if(dr)dr.style.display='none';var c=document.createElement('div');c.id='drp-filtro';c.style.marginBottom='10px';if(fr&&fr.parentNode)fr.parentNode.insertBefore(c,fr);window.drp=new DateRangePicker('#drp-filtro',{locale:'es',start:new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'}),end:new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'}),onApply:function(r){fechaDesde=r.start+'T00:00:00';fechaHasta=r.end+'T23:59:59';periodoLabel=r.label;var fi=document.getElementById('filter-info');if(fi)fi.innerHTML='Mostrando: <span>'+r.label+'</span>';cargarTodo();}});}
 
 setInterval(()=>{const el=document.getElementById('clk');if(el)el.textContent=new Date().toLocaleTimeString('es-PE')},1000)
 
