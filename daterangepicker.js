@@ -393,7 +393,7 @@
     _bindGlobalEvents() {
       const self = this;
       document.addEventListener('click', function (e) {
-        if (self.state.open && !self.el.contains(e.target)) self._close();
+        if (self.state.open && !e.composedPath().includes(self.el)) self._close();
       });
       document.addEventListener('keydown', function (e) {
         if (self.state.open && e.key === 'Escape') { self._close(); self.opts.onCancel(); }
