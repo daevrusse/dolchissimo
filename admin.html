@@ -558,7 +558,7 @@ function renderChartDias(ent){
       <div class="bar-val" style="font-size:9px;color:#555;">${x.v>0?'S/'+Math.round(x.v):''}</div>
       <div class="bar-dia${x.v===Math.max(...arr.map(y=>y.v))&&x.v>0?' peak':''}" style="height:${Math.round(x.v/peak*90)}px;background:${x.v===Math.max(...arr.map(y=>y.v))&&x.v>0?'#2D6A4F':'#1e1e1e'};"></div>
       <div class="bar-dia-lbl">${x.lbl}</div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 function renderChartHoras(ent){
@@ -572,7 +572,7 @@ function renderChartHoras(ent){
     <div class="bar-h-col">
       <div class="bar-h" style="height:${Math.round(x.v/pk*70)}px;background:${x.v===Math.max(...ha.map(y=>y.v))&&x.v>0?'#2D6A4F':'#1e1e1e'};"></div>
       <div class="bar-h-lbl">${x.h}h</div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 function renderRankPlatos(ent){
@@ -587,7 +587,7 @@ function renderRankPlatos(ent){
       <span class="rank-name">${n}</span>
       <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${Math.round(q/mx*100)}%;"></div></div>
       <div style="text-align:right;"><div class="rank-val">S/${(v[n]||0).toFixed(0)}</div><div style="font-size:10px;color:#555;">${q} uds</div></div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 function renderDonutCategorias(ent){
@@ -624,7 +624,7 @@ function renderDonutCategorias(ent){
       <div class="donut-dot" style="background:${colors[i]};"></div>
       <span class="donut-lbl">${cat}</span>
       <span class="donut-pct">${Math.round(val/total*100)}%</span>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 function renderRankMesas(ent){
@@ -639,7 +639,7 @@ function renderRankMesas(ent){
       <span class="rank-name">${m}</span>
       <div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${Math.round(q/mx*100)}%;"></div></div>
       <div style="text-align:right;"><div class="rank-val">${q} ped.</div><div style="font-size:10px;color:#555;">S/${(v[m]||0).toFixed(0)}</div></div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 function renderTiempos(ent){
@@ -664,7 +664,7 @@ function renderTiempos(ent){
         <div style="font-size:13px;font-weight:700;color:${tc(p.te)};">~${fmtMin(p.te)}</div>
         <div class="t-bar-w" style="margin-top:3px;margin-left:auto;"><div class="t-bar-f" style="width:${Math.min(Math.round(p.te/mx*100),100)}%;background:${tc(p.te)};"></div></div>
       </div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 function renderInsights(ent,can,act,tv,tk){
@@ -678,7 +678,7 @@ function renderInsights(ent,can,act,tv,tk){
   if(tk>0)ins.push(`🎫 Ticket promedio <strong>S/${tk.toFixed(2)}</strong> — ofrecer combos puede subirlo.`)
   if(can.length>0)ins.push(`❌ ${can.length} cancelados (${todoPedidos.length>0?Math.round(can.length/todoPedidos.length*100):0}%) — revisar causas.`)
   if(ent.length===0)ins.push(`📊 Sin pedidos entregados en el período seleccionado.`)
-  document.getElementById('insights-box').innerHTML=ins.map(i=>`<div class="insight">${i}</div>`).join('ZZZTEST')
+  document.getElementById('insights-box').innerHTML=ins.map(i=>`<div class="insight">${i}</div>`).join('')
 }
 
 // ── PEDIDOS ───────────────────────────────────────────────────
@@ -706,7 +706,7 @@ function renderPedidos(){
           <button class="act-btn btn-ca" onclick="cancelar('${p.id}')">Cancelar</button>
         </div>
       </div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
   document.getElementById('historial-list').innerHTML=his.length===0?'<div class="loading-txt">Sin historial</div>':his.map(p=>`
     <div class="pedido-row">
       <span class="ped-num">#${p.numero||'—'}</span>
@@ -718,7 +718,7 @@ function renderPedidos(){
         <span class="ped-total">S/${parseFloat(p.total||0).toFixed(2)}</span><br>
         <span class="s-pill s-entregado" style="margin-top:4px;display:inline-block;">Entregado</span>
       </div>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 // ── COCINA ────────────────────────────────────────────────────
@@ -734,19 +734,19 @@ function renderCocina(){
     return`<div class="comanda ${cc(s)}">
       <div class="c-top"><span class="c-num">#${p.numero||'—'} · ${p.mesa||'—'}</span><span class="c-timer ${tc(s)}">${fm(s)}</span></div>
       <div style="font-size:11px;color:#555;margin-bottom:6px;">${p.cliente_nombre||'—'}</div>
-      ${(p.pedido_items||[]).map(i=>`<div class="c-item">${i.cantidad}x ${i.nombre}</div>`).join('ZZZTEST')}
+      ${(p.pedido_items||[]).map(i=>`<div class="c-item">${i.cantidad}x ${i.nombre}</div>`).join('')}
       <div class="c-actions">
         <button class="c-btn c-btn-green" onclick="avanzar('${p.id}','${p.estado==='espera'?'cocina':'listo'}')">${p.estado==='espera'?'▶ Iniciar':'✓ Listo'}</button>
         <button class="c-btn c-btn-red" onclick="cancelar('${p.id}')">✗ Rechazar</button>
       </div>
     </div>`
-  }).join('ZZZTEST')
+  }).join('')
 }
 
 // ── MENÚ ──────────────────────────────────────────────────────
 function renderCatFilter(){
   const cats=['Todo',...new Set(menuItems.map(m=>m.categoria))]
-  document.getElementById('cat-filter').innerHTML=cats.map(c=>`<button class="cf-btn${catActiva===c?' active':''}" onclick="setCat('${c}')">${c}</button>`).join('ZZZTEST')
+  document.getElementById('cat-filter').innerHTML=cats.map(c=>`<button class="cf-btn${catActiva===c?' active':''}" onclick="setCat('${c}')">${c}</button>`).join('')
 }
 function renderMenu(){
   const f=catActiva==='Todo'?menuItems:menuItems.filter(m=>m.categoria===catActiva)
@@ -756,7 +756,7 @@ function renderMenu(){
       <div style="flex:1;min-width:0;"><div class="m-name">${p.nombre}</div><div class="m-cat">${p.categoria}${p.dias_disponible?' · Solo '+p.dias_disponible:''}</div></div>
       <span class="m-price">S/${parseFloat(p.precio).toFixed(2)}</span>
       <button onclick="abrirModalEditarPlato('${p.id}')" style="background:none;border:none;cursor:pointer;font-size:16px;margin-right:8px;" title="Editar">✏️</button><button class="toggle ${p.disponible?'ton':'toff'}" onclick="toggleMenu('${p.id}',${!p.disponible})"></button>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 
 // ── MODAL AVANZADO ────────────────────────────────────────────
@@ -785,7 +785,7 @@ function renderItemsEdicion(){
         <button class="mi-btn" onclick="cambiarQtyEdicion(${idx},1)">+</button>
       </div>
       <span class="mi-price">S/${((it.precio_unit||0)*it.cantidad).toFixed(2)}</span>
-    </div>`).join('ZZZTEST')
+    </div>`).join('')
 }
 window.cambiarQtyEdicion=(idx,d)=>{itemsEnEdicion[idx].cantidad+=d;if(itemsEnEdicion[idx].cantidad<=0)itemsEnEdicion.splice(idx,1);renderItemsEdicion()}
 window.toggleEditSearch=()=>{const b=document.getElementById('edit-search-box');b.style.display=b.style.display==='none'?'block':'none'}
@@ -794,7 +794,7 @@ window.searchInMenu=(val)=>{
   if(!val){r.style.display='none';return}
   const f=menuItems.filter(m=>m.nombre.toLowerCase().includes(val.toLowerCase()))
   r.style.display='block'
-  r.innerHTML=f.length>0?f.map(m=>`<div class="search-item-mini" onclick="addNewItemToEdit('${m.id}')"><span>${m.nombre}</span><span style="color:##B7E4C7">S/${parseFloat(m.precio).toFixed(2)} +</span></div>`).join('ZZZTEST'):'<div class="loading-txt">No encontrado</div>'
+  r.innerHTML=f.length>0?f.map(m=>`<div class="search-item-mini" onclick="addNewItemToEdit('${m.id}')"><span>${m.nombre}</span><span style="color:##B7E4C7">S/${parseFloat(m.precio).toFixed(2)} +</span></div>`).join(''):'<div class="loading-txt">No encontrado</div>'
 }
 window.addNewItemToEdit=(menuId)=>{
   const plato=menuItems.find(m=>m.id===menuId)
@@ -827,10 +827,10 @@ window.abrirModalNuevoPlato=()=>{window.platoEditId=null;const _t=document.query
   document.getElementById('np-descripcion').value=''
   document.getElementById('np-dias').value=''
   const cats=[...new Set(menuItems.map(m=>m.categoria))]
-  document.getElementById('np-cat-list').innerHTML=cats.map(c=>`<option value="${c}"></option>`).join('ZZZTEST')
+  document.getElementById('np-cat-list').innerHTML=cats.map(c=>`<option value="${c}"></option>`).join('')
   document.getElementById('modal-nuevo').style.display='flex'
 }
-window.cerrarModalNuevo=()=>{document.getElementById('modal-nuevo').style.display='none';window.platoEditId=null};window.abrirModalEditarPlato=(id)=>{const p=menuItems.find(x=>String(x.id)===String(id));if(!p)return;window.platoEditId=p.id;document.getElementById('np-nombre').value=p.nombre||'';document.getElementById('np-categoria').value=p.categoria||'';document.getElementById('np-precio').value=p.precio||'';document.getElementById('np-icono').value=p.emoji||'';document.getElementById('np-descripcion').value=p.descripcion||'';document.getElementById('np-dias').value=p.dias_disponible||'';const cats=[...new Set(menuItems.map(m=>m.categoria))];document.getElementById('np-cat-list').innerHTML=cats.map(c=>`<option value="${c}"></option>`).join('ZZZTEST');const t=document.querySelector('#modal-nuevo .modal-title');if(t)t.textContent='Editar plato';document.getElementById('modal-nuevo').style.display='flex'}
+window.cerrarModalNuevo=()=>{document.getElementById('modal-nuevo').style.display='none';window.platoEditId=null};window.abrirModalEditarPlato=(id)=>{const p=menuItems.find(x=>String(x.id)===String(id));if(!p)return;window.platoEditId=p.id;document.getElementById('np-nombre').value=p.nombre||'';document.getElementById('np-categoria').value=p.categoria||'';document.getElementById('np-precio').value=p.precio||'';document.getElementById('np-icono').value=p.emoji||'';document.getElementById('np-descripcion').value=p.descripcion||'';document.getElementById('np-dias').value=p.dias_disponible||'';const cats=[...new Set(menuItems.map(m=>m.categoria))];document.getElementById('np-cat-list').innerHTML=cats.map(c=>`<option value="${c}"></option>`).join('');const t=document.querySelector('#modal-nuevo .modal-title');if(t)t.textContent='Editar plato';document.getElementById('modal-nuevo').style.display='flex'}
 window.guardarNuevoPlato=async()=>{
   const nombre=document.getElementById('np-nombre').value.trim()
   const categoria=document.getElementById('np-categoria').value.trim()
