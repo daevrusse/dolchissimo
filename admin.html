@@ -861,6 +861,7 @@ window.cerrarSesion=async()=>{
   await supabase.auth.signOut()
   location.reload()
 }
+window.cargarTodo=cargarTodo;window.exportarVentasCSV=exportarVentasCSV;window.exportarPlatosCSV=exportarPlatosCSV;
 
 init()
 </script>
