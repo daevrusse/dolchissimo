@@ -421,7 +421,7 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWJpbmhreWlqZXRtZndudWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0Mzk1NzEsImV4cCI6MjA5MzAxNTU3MX0.C4WlOxrG6ilhDfaMkFhtfl_HxLRXC2Pkf4gcpGZTouE'
 )
 
-let todoPedidos=[],menuItems=[],catActiva='Todo',editId=null,itemsEnEdicion=[]
+let todoPedidos=[],menuItems=[],catActiva='Todo',editId=null,itemsEnEdicion=[],miRol=''
 let fechaDesde='',fechaHasta='',periodoLabel='Hoy';function initDateRangePickerUI(){var fr=document.querySelector('.filter-row');var dr=document.querySelector('.date-row');if(fr)fr.style.display='none';if(dr)dr.style.display='none';var c=document.createElement('div');c.id='drp-filtro';c.style.marginBottom='10px';if(fr&&fr.parentNode)fr.parentNode.insertBefore(c,fr);window.drp=new DateRangePicker('#drp-filtro',{locale:'es',start:new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'}),end:new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'}),onApply:function(r){fechaDesde=r.start+'T00:00:00-05:00';fechaHasta=r.end+'T23:59:59-05:00';periodoLabel=r.label;var fi=document.getElementById('filter-info');if(fi)fi.innerHTML='Mostrando: <span>'+r.label+'</span>';cargarTodo();}});}
 
 setInterval(()=>{const el=document.getElementById('clk');if(el)el.textContent=new Date().toLocaleTimeString('es-PE')},1000)
@@ -433,7 +433,7 @@ async function init(){
 }
 async function verificarRol(email){
   const{data:u}=await supabase.from('usuarios').select('rol,nombre,activo').eq('email',email).single()
-  if(!u||!u.activo){await supabase.auth.signOut();return}
+  if(!u||!u.activo){await supabase.auth.signOut();return}miRol=u.rol;
   if(u.rol==='cocina'){window.location.href='/cocina.html';return}
   if(u.rol==='mozo'){window.location.href='/mozo.html';return}
   document.getElementById('auth-guard').style.display='none'
@@ -716,10 +716,11 @@ function renderPedidos(){
       </div>
       <div style="text-align:right;">
         <span class="ped-total">S/${parseFloat(p.total||0).toFixed(2)}</span><br>
-        <span class="s-pill s-entregado" style="margin-top:4px;display:inline-block;">Entregado</span>
+        <span class="s-pill s-entregado" style="margin-top:4px;display:inline-block;">Entregado</span>${miRol==='admin'?`<br><button class="act-btn btn-ca" style="margin-top:4px;font-size:11px;" onclick="eliminarPedido('${p.id}')">🗑 Eliminar</button>`:''}
       </div>
     </div>`).join('')
 }
+  async function eliminarPedido(id){if(miRol!=='admin'){alert('Solo el administrador puede eliminar pedidos.');return}if(!confirm('¿Eliminar este pedido de forma permanente? Esta acción no se puede deshacer.'))return;await supabase.from('pedido_items').delete().eq('pedido_id',id);await supabase.from('pedidos').delete().eq('id',id);await cargarTodo()}
 
 // ── COCINA ────────────────────────────────────────────────────
 function renderCocina(){
@@ -861,7 +862,7 @@ window.cerrarSesion=async()=>{
   await supabase.auth.signOut()
   location.reload()
 }
-window.cargarTodo=cargarTodo;window.exportarVentasCSV=exportarVentasCSV;window.exportarPlatosCSV=exportarPlatosCSV;
+window.cargarTodo=cargarTodo;window.exportarVentasCSV=exportarVentasCSV;window.exportarPlatosCSV=exportarPlatosCSV;window.eliminarPedido=eliminarPedido;
 
 init()
 </script>
