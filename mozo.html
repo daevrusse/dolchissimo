@@ -325,7 +325,7 @@ window.abrirCarrito=()=>{
     <div class="total-row"><span>Total</span><span style="color:##B7E4C7">S/ ${subtotal().toFixed(2)}</span></div>
     <input class="form-inp" type="text" id="m-nombre" placeholder="Nombre del cliente">
     <input class="form-inp" type="text" id="m-mesa" placeholder="Mesa (ej: Mesa 3)">
-    <input class="form-inp" type="text" id="m-nota" placeholder="Nota para cocina">
+    <input class="form-inp" type="text" id="m-nota" placeholder="Nota para cocina"><select class="form-inp" id="m-pago"><option value="">Método de pago</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta de crédito</option><option value="yape">Yape</option></select>
     <button class="confirm-btn" onclick="confirmarPedido()">Enviar a cocina ✓</button>
     <button class="cancel-btn" onclick="document.getElementById('modal-carrito').style.display='none'">Cancelar</button>`
 }
@@ -343,7 +343,7 @@ window.confirmarPedido=async()=>{
   const nota=document.getElementById('m-nota').value||''
   const items=Object.entries(cart).filter(([,q])=>q>0).map(([id,q])=>({...menuItems.find(m=>m.id==id),qty:q}))
   const total=subtotal()
-  const{data:pedido}=await supabase.from('pedidos').insert([{cliente_nombre:nombre,mesa,estado:'espera',total,nota}]).select().single()
+  const metodoPago=document.getElementById('m-pago').value||''; const atendidoPor=localStorage.getItem('ff58_nombre')||''; const{data:pedido}=await supabase.from('pedidos').insert([{cliente_nombre:nombre,mesa,estado:'espera',total,nota,metodo_pago:metodoPago||null,atendido_por:atendidoPor}]).select().single()
   if(pedido){
     await supabase.from('pedido_items').insert(items.map(it=>({pedido_id:pedido.id,menu_item_id:parseInt(it.id),nombre:it.nombre,cantidad:it.qty,precio_unit:parseFloat(it.precio)})))
   }
