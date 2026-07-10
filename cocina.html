@@ -12,7 +12,7 @@ body{background:#060a0f;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
 .logo-sq{width:32px;height:32px;background:#2D6A4F;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;}
 .h-title{font-size:14px;font-weight:700;color:#e2e8f0;}
 .h-sub{font-size:10px;color:#555;}
-.h-clock{font-size:24px;font-weight:700;color:#2D6A4F;font-variant-numeric:tabular-nums;}
+.h-clock{font-size:24px;font-weight:700;color:#2D6A4F;font-variant-numeric:tabular-nums;}.logout-btn{background:transparent;border:0.5px solid #1e2d3d;color:#666;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer;}.logout-btn:hover{border-color:#2D6A4F;color:#2D6A4F;}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px;}
 .stat{background:#111820;border:1px solid #1e2d3d;border-radius:8px;padding:10px;text-align:center;}
 .stat-val{font-size:24px;font-weight:700;}
@@ -64,7 +64,7 @@ body{background:#060a0f;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
     <div class="logo-sq">GR</div>
     <div><div class="h-title">🍳 Cocina · Gregorisa</div><div class="h-sub">Comandas en tiempo real</div></div>
   </div>
-  <div class="h-clock" id="clk">--:--:--</div>
+  <div style="display:flex;align-items:center;gap:14px;"><div class="h-clock" id="clk">--:--:--</div><button class="logout-btn" onclick="cerrarSesion()">Salir</button></div>
 </div>
 
 <div class="stats">
@@ -101,7 +101,7 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWJpbmhreWlqZXRtZndudWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0Mzk1NzEsImV4cCI6MjA5MzAxNTU3MX0.C4WlOxrG6ilhDfaMkFhtfl_HxLRXC2Pkf4gcpGZTouE'
 )
 
-let pedidos=[], editId=null, totalEntregados=0
+let pedidos=[], editId=null, totalEntregados=0; window.cerrarSesion=async()=>{await supabase.auth.signOut();window.location.href='/login.html'}
 
 setInterval(()=>{
   document.getElementById('clk').textContent=new Date().toLocaleTimeString('es-PE')
