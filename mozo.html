@@ -345,7 +345,7 @@ window.confirmarPedido=async()=>{
   const total=subtotal()
   const metodoPago=document.getElementById('m-pago').value||''; const atendidoPor=localStorage.getItem('ff58_nombre')||''; const{data:pedido}=await supabase.from('pedidos').insert([{cliente_nombre:nombre,mesa,estado:'espera',total,nota,metodo_pago:metodoPago||null,atendido_por:atendidoPor}]).select().single()
   if(pedido){
-    await supabase.from('pedido_items').insert(items.map(it=>({pedido_id:pedido.id,menu_item_id:parseInt(it.id),nombre:it.nombre,cantidad:it.qty,precio_unit:parseFloat(it.precio)})))
+       await supabase.from('pedido_items').insert(items.map(it=>({pedido_id:pedido.id,menu_item_id:parseInt(it.id),nombre:it.nombre,cantidad:it.qty,precio_unit:parseFloat(it.precio)})))
   }
   cart={}
   document.getElementById('modal-carrito').style.display='none'
@@ -357,7 +357,7 @@ window.confirmarPedido=async()=>{
 // LÓGICA DE EDICIÓN DE PEDIDOS EXISTENTES
 window.abrirEditarModal=(id)=>{
   editId=id
-  const p=pedidos.find(x=>x.id===id)
+  const p=pedidos.find(x=>String(x.id)===String(id))
   itemsEnEdicion = [...(p.pedido_items || [])]
   
   document.getElementById('edit-num').textContent='#'+(p?.numero||'—')
