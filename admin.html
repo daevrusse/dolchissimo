@@ -230,7 +230,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
     <div class="tab active" onclick="setTab('dashboard',this)">📊 Dashboard</div>
     <div class="tab" onclick="setTab('pedidos',this)">📋 Pedidos <span class="realtime-badge" id="ped-badge">0</span></div>
     <div class="tab" onclick="setTab('cocina',this)">🍳 Cocina</div>
-    <div class="tab" onclick="setTab('menu',this)">🍗 Menú</div>
+    a<div class="tab" onclick="setTab('menu',this)">🍗 Menú</div><div class="tab" onclick="setTab('usuarios',this)">👤 Usuarios</div>
   </div>
 
   <!-- DASHBOARD -->
@@ -360,6 +360,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
     <button class="btn-add-more" onclick="abrirModalNuevoPlato()">+ Agregar plato nuevo</button>
     <div class="card"><div class="card-title">CARTA — <span id="menu-count">—</span> productos activos</div><div id="menu-list"></div></div>
   </div>
+  <div class="view" id="v-usuarios"><button class="btn-add-more" onclick="abrirModalNuevoUsuario()">+ Crear usuario</button><div class="card"><div class="card-title">USUARIOS DEL SISTEMA</div><div id="usuarios-list"></div></div></div>
 </div>
 
 <!-- MODAL EDITAR AVANZADO -->
@@ -414,7 +415,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
   </div>
 </div>
 
-<script src="daterangepicker.js"></script><script type="module">
+<div class="modal-bottom" id="modal-nuevo-usuario" style="display:none"><div class="modal-sheet"><div class="modal-title">Crear nuevo usuario</div><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre *</label><input class="modal-input" type="text" id="nu-nombre" placeholder="Ej: Juan Pérez"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Email *</label><input class="modal-input" type="email" id="nu-email" placeholder="Ej: juan@gregorisa.com"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Contraseña temporal *</label><input class="modal-input" type="text" id="nu-pass" placeholder="Mínimo 6 caracteres"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Rol *</label><select class="modal-select" id="nu-rol"><option value="mozo">Mozo</option><option value="cocina">Cocina / Barra</option><option value="admin">Administrador</option></select><div class="modal-btns"><button class="modal-cancel" onclick="cerrarModalNuevoUsuario()">Cancelar</button><button class="modal-ok" onclick="crearUsuario()">Crear usuario</button></div></div></div><script src="daterangepicker.js"></script><script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 const supabase = createClient(
   'https://rsebinhkyijetmfwnugl.supabase.co',
@@ -458,7 +459,7 @@ function iniciarApp(){initDateRangePickerUI();
   initFechas()
   cargarTodo()
   cargarMenu()
-  supabase.channel('admin-live').on('postgres_changes',{event:'*',schema:'public',table:'pedidos'},cargarTodo).subscribe()
+  cargarUsuarios();supabase.channel('admin-live').on('postgres_changes',{event:'*',schema:'public',table:'pedidos'},cargarTodo).subscribe()
   setInterval(cargarTodo,30000)
   setInterval(()=>{if(document.getElementById('v-cocina').classList.contains('active'))renderCocina()},1000)
 }
@@ -862,7 +863,7 @@ window.cerrarSesion=async()=>{
   await supabase.auth.signOut()
   location.reload()
 }
-window.cargarTodo=cargarTodo;window.exportarVentasCSV=exportarVentasCSV;window.exportarPlatosCSV=exportarPlatosCSV;window.eliminarPedido=eliminarPedido;
+async function cargarUsuarios(){const{data}=await supabase.from('usuarios').select('id,nombre,email,rol,activo').order('nombre');renderUsuarios(data||[])}function renderUsuarios(list){document.getElementById('usuarios-list').innerHTML=list.map(u=>`<div class="menu-row"><span class="m-icon">${u.rol==='admin'?'👑':u.rol==='cocina'?'🍳':'🧑‍💼'}</span><div style="flex:1;min-width:0;"><div class="m-name">${u.nombre}</div><div class="m-cat">${u.email} · ${u.rol}</div></div><button class="toggle ${u.activo?'ton':'toff'}" onclick="toggleUsuarioActivo('${u.id}',${!u.activo})"></button></div>`).join('')}window.abrirModalNuevoUsuario=()=>{document.getElementById('nu-nombre').value='';document.getElementById('nu-email').value='';document.getElementById('nu-pass').value='';document.getElementById('nu-rol').value='mozo';document.getElementById('modal-nuevo-usuario').style.display='flex'}window.cerrarModalNuevoUsuario=()=>{document.getElementById('modal-nuevo-usuario').style.display='none'}window.toggleUsuarioActivo=async(id,n)=>{await supabase.from('usuarios').update({activo:n}).eq('id',id);await cargarUsuarios()}window.crearUsuario=async()=>{const nombre=document.getElementById('nu-nombre').value.trim();const email=document.getElementById('nu-email').value.trim();const pass=document.getElementById('nu-pass').value.trim();const rol=document.getElementById('nu-rol').value;if(!nombre||!email||!pass){alert('Completa todos los campos');return}if(pass.length<6){alert('La contraseña debe tener al menos 6 caracteres');return}const{data:sessionData}=await supabase.auth.getSession();const adminSession=sessionData.session;const{error:signUpError}=await supabase.auth.signUp({email,password:pass});if(signUpError){alert('Error al crear el usuario: '+signUpError.message);return}if(adminSession)await supabase.auth.setSession({access_token:adminSession.access_token,refresh_token:adminSession.refresh_token});const{error:insertError}=await supabase.from('usuarios').insert({email,nombre,rol,activo:true});if(insertError){alert('El usuario se creó en el acceso, pero hubo un error al guardar sus datos: '+insertError.message);return}document.getElementById('modal-nuevo-usuario').style.display='none';alert('Usuario creado correctamente. Email: '+email+' - Contraseña temporal: '+pass+' - Comparte estas credenciales de forma segura.');await cargarUsuarios()}window.cargarTodo=cargarTodo;window.exportarVentasCSV=exportarVentasCSV;window.exportarPlatosCSV=exportarPlatosCSV;window.eliminarPedido=eliminarPedido;window.cargarUsuarios=cargarUsuarios;
 
 init()
 </script>
