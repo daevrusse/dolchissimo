@@ -764,7 +764,7 @@ function renderMenu(){
 // ── MODAL AVANZADO ────────────────────────────────────────────
 window.abrirModal=(id)=>{
   editId=id
-  const p=todoPedidos.find(x=>x.id===id)
+  const p=todoPedidos.find(x=>String(x.id)===String(id))
   itemsEnEdicion=[...(p?.pedido_items||[])]
   document.getElementById('modal-num').textContent='#'+(p?.numero||'—')
   document.getElementById('modal-estado').value=p?.estado||'espera'
