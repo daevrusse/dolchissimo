@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
     const checkRes = await fetch(SUPABASE_URL + '/rest/v1/usuarios?email=eq.' + encodeURIComponent(callerEmail) + '&select=rol,activo', { headers: { apikey: SERVICE_KEY, Authorization: 'Bearer ' + SERVICE_KEY } })
     const checkData = await checkRes.json()
     const callerRow = Array.isArray(checkData) ? checkData[0] : null
-    if (!callerRow || callerRow.rol !== 'admin' || !callerRow.activo) { res.status(403).json({ error: 'No autorizado' }); return }
+    if (!callerRow || callerRow.rol !== 'admin' || !callerRow.activo) { res.status(403).json({ error: 'No autorizado', debugStatus: checkRes.status, debugData: checkData, debugCallerEmail: callerEmail }); return }
     let targetId = null
     let page = 1
     while (!targetId) {
