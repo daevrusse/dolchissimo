@@ -336,7 +336,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
     <!-- TOP MESAS -->
     <div class="rank-card" style="margin-bottom:12px;">
       <div class="rank-title">🪑 Mesas con más pedidos</div>
-      <div id="rank-mesas"></div>
+              <div id="rank-mesas"></div></div><div class="rank-card" style="margin-bottom:12px;"><div class="rank-title">💳 Tipo de pago</div><div id="rank-pago"></div>
     </div>
 
     <!-- INSIGHTS -->
@@ -529,7 +529,7 @@ function renderDashboard(){
   renderChartHoras(ent)
   renderRankPlatos(ent)
   renderDonutCategorias(ent)
-  renderRankMesas(ent)
+  renderRankMesas(ent);renderTipoPago(ent)
   renderTiempos(ent)
   renderInsights(ent,can,act,tv,tk)
 }
@@ -628,7 +628,16 @@ function renderDonutCategorias(ent){
     </div>`).join('')
 }
 
-function renderRankMesas(ent){
+function renderTipoPago(ent){
+    const labels={efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
+        const v={};ent.forEach(p=>{const m=p.metodo_pago||'sin_especificar';v[m]=(v[m]||0)+parseFloat(p.total||0)})
+            const s=Object.entries(v).sort((a,b)=>b[1]-a[1])
+                if(s.length===0){document.getElementById('rank-pago').innerHTML='<div class="loading-txt">Sin datos</div>';return}
+    const mx=s[0][1]
+        document.getElementById('rank-pago').innerHTML=s.map(([m,val])=>`<div class="rank-item"><span class="rank-name">${labels[m]||'Sin especificar'}</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${Math.round(val/mx*100)}%;"></div></div><div style="text-align:right;"><div class="rank-val">S/${val.toFixed(2)}</div></div></div>`).join('')
+}
+  
+  function renderRankMesas(ent){
   const c={},v={};ent.forEach(p=>{const m=p.mesa||'Sin mesa';c[m]=(c[m]||0)+1;v[m]=(v[m]||0)+parseFloat(p.total||0)})
   const s=Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,5)
   if(s.length===0){document.getElementById('rank-mesas').innerHTML='<div class="loading-txt">Sin datos</div>';return}
