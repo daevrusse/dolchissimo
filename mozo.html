@@ -421,9 +421,9 @@ window.searchInMenu = (val) => {
 }
 
 window.addNewItemToEdit = (menuId) => {
-    const plato = menuItems.find(m => m.id === menuId);
+    const plato = menuItems.find(m => String(m.id) === String(menuId));
     // Verificar si ya está en la lista de edición
-    const existe = itemsEnEdicion.find(it => it.menu_item_id === menuId);
+    const existe = itemsEnEdicion.find(it => String(it.menu_item_id) === String(menuId));
     if(existe) {
         existe.cantidad += 1;
     } else {
