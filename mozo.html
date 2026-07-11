@@ -487,8 +487,8 @@ window.setTab=(id,el)=>{
   el.classList.add('active')
 }
 window.cerrarSesion=async()=>{
-  await supabase.auth.signOut()
-  localStorage.removeItem('ff58_rol');localStorage.removeItem('ff58_nombre')
+  try{await supabase.auth.signOut({scope:'local'})}catch(e){}
+  try{Object.keys(localStorage).forEach(k=>{if(k.indexOf('sb-')===0||k==='ff58_rol'||k==='ff58_nombre')localStorage.removeItem(k)})}catch(e){}
   window.location.href='/login.html'
 }
 
