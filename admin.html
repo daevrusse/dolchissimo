@@ -784,12 +784,12 @@ function renderItemsEdicion(){
       <div style="display:flex;align-items:center;gap:6px;">
         <button class="mi-btn" onclick="cambiarQtyEdicion(${idx},-1)">−</button>
         <span class="mi-qty">${it.cantidad}</span>
-        <button class="mi-btn" onclick="cambiarQtyEdicion(${idx},1)">+</button>
+        <button class="mi-btn" onclick="cambiarQtyEdicion(${idx},1)">+</button><input type="number" min="0" max="100" value="${it.descuento_pct||0}" onchange="setDescuentoEdicion(${idx}, this.value)" style="width:42px;margin-left:6px;background:#1a1a1a;border:1px solid #333;color:#e2e8f0;border-radius:6px;padding:4px;font-size:11px;text-align:center;" title="Descuento %">%
       </div>
-      <span class="mi-price">S/${((it.precio_unit||0)*it.cantidad).toFixed(2)}</span>
+      <span class="mi-price">S/${((it.precio_unit||0)*it.cantidad*(1-(it.descuento_pct||0)/100)).toFixed(2)}${(it.descuento_pct||0)>0?(' (-'+(it.descuento_pct||0)+'%)'):''}</span>
     </div>`).join('')
 }
-window.cambiarQtyEdicion=(idx,d)=>{itemsEnEdicion[idx].cantidad+=d;if(itemsEnEdicion[idx].cantidad<=0)itemsEnEdicion.splice(idx,1);renderItemsEdicion()}
+window.setDescuentoEdicion=(idx,val)=>{itemsEnEdicion[idx].descuento_pct=Math.max(0,Math.min(100,parseFloat(val)||0));renderItemsEdicion()};window.cambiarQtyEdicion=(idx,d)=>{itemsEnEdicion[idx].cantidad+=d;if(itemsEnEdicion[idx].cantidad<=0)itemsEnEdicion.splice(idx,1);renderItemsEdicion()}
 window.toggleEditSearch=()=>{const b=document.getElementById('edit-search-box');b.style.display=b.style.display==='none'?'block':'none'}
 window.searchInMenu=(val)=>{
   const r=document.getElementById('edit-search-results')
@@ -802,18 +802,18 @@ window.addNewItemToEdit=(menuId)=>{
   const plato=menuItems.find(m=>String(m.id)===String(menuId))
   const existe=itemsEnEdicion.find(it=>String(it.menu_item_id)===String(menuId))
   if(existe)existe.cantidad+=1
-  else itemsEnEdicion.push({pedido_id:editId,menu_item_id:plato.id,nombre:plato.nombre,cantidad:1,precio_unit:parseFloat(plato.precio)})
+  else itemsEnEdicion.push({pedido_id:editId,menu_item_id:plato.id,nombre:plato.nombre,cantidad:1,precio_unit:parseFloat(plato.precio),descuento_pct:0})
   renderItemsEdicion()
   document.getElementById('edit-search-results').style.display='none'
   document.getElementById('edit-search-inp').value=''
 }
 window.guardarEdicion=async()=>{
   if(!editId)return
-  const nuevoTotal=itemsEnEdicion.reduce((s,it)=>s+(it.cantidad*(it.precio_unit||0)),0)
+  const nuevoTotal=itemsEnEdicion.reduce((s,it)=>s+(it.cantidad*(it.precio_unit||0)*(1-(it.descuento_pct||0)/100)),0)
   try{
     await supabase.from('pedidos').update({estado:document.getElementById('modal-estado').value,nota:document.getElementById('modal-nota').value,total:nuevoTotal}).eq('id',editId)
     await supabase.from('pedido_items').delete().eq('pedido_id',editId)
-    if(itemsEnEdicion.length>0)await supabase.from('pedido_items').insert(itemsEnEdicion.map(it=>({pedido_id:editId,menu_item_id:it.menu_item_id,nombre:it.nombre,cantidad:it.cantidad,precio_unit:it.precio_unit})))
+    if(itemsEnEdicion.length>0)await supabase.from('pedido_items').insert(itemsEnEdicion.map(it=>({pedido_id:editId,menu_item_id:it.menu_item_id,nombre:it.nombre,cantidad:it.cantidad,precio_unit:it.precio_unit,descuento_pct:it.descuento_pct||0})))
     cerrarModal();await cargarTodo()
   }catch(e){alert('Error al actualizar')}
 }
