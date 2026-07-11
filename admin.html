@@ -799,8 +799,8 @@ window.searchInMenu=(val)=>{
   r.innerHTML=f.length>0?f.map(m=>`<div class="search-item-mini" onclick="addNewItemToEdit('${m.id}')"><span>${m.nombre}</span><span style="color:##B7E4C7">S/${parseFloat(m.precio).toFixed(2)} +</span></div>`).join(''):'<div class="loading-txt">No encontrado</div>'
 }
 window.addNewItemToEdit=(menuId)=>{
-  const plato=menuItems.find(m=>m.id===menuId)
-  const existe=itemsEnEdicion.find(it=>it.menu_item_id===menuId)
+  const plato=menuItems.find(m=>String(m.id)===String(menuId))
+  const existe=itemsEnEdicion.find(it=>String(it.menu_item_id)===String(menuId))
   if(existe)existe.cantidad+=1
   else itemsEnEdicion.push({pedido_id:editId,menu_item_id:plato.id,nombre:plato.nombre,cantidad:1,precio_unit:parseFloat(plato.precio)})
   renderItemsEdicion()
