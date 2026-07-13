@@ -519,7 +519,7 @@ window.eliminar=async(id)=>{
 }
 
 window.imprimirTicket=(id)=>{
-  const p=pedidos.find(x=>String(x.id)===String(id))
+  const p=pedidos.find(x=>String(x.id)===String(id))||historialPedidos.find(x=>String(x.id)===String(id))
   if(!p){alert('Pedido no encontrado');return}
   const pagoLabels={efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
   const pagoTxt=pagoLabels[p.metodo_pago]||'Sin especificar'
