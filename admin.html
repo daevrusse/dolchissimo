@@ -735,11 +735,41 @@ function renderPedidos(){
       </div>
       <div style="text-align:right;">
         <span class="ped-total">S/${parseFloat(p.total||0).toFixed(2)}</span><br>
-        <span class="s-pill s-entregado" style="margin-top:4px;display:inline-block;">Entregado</span>${miRol==='admin'?`<br><button class="act-btn btn-ca" style="margin-top:4px;font-size:11px;" onclick="eliminarPedido('${p.id}')">🗑 Eliminar</button>`:''}
+        <span class="s-pill s-entregado" style="margin-top:4px;display:inline-block;">Entregado</span><br><button class="act-btn btn-ed" style="margin-top:4px;font-size:11px;" onclick="imprimirTicket('${p.id}')">🖨 Imprimir</button>${miRol==='admin'?`<br><button class="act-btn btn-ca" style="margin-top:4px;font-size:11px;" onclick="eliminarPedido('${p.id}')">🗑 Eliminar</button>`:''}
       </div>
     </div>`).join('')
 }
-  async function eliminarPedido(id){if(miRol!=='admin'){alert('Solo el administrador puede eliminar pedidos.');return}if(!confirm('¿Eliminar este pedido de forma permanente? Esta acción no se puede deshacer.'))return;await supabase.from('pedido_items').delete().eq('pedido_id',id);await supabase.from('pedidos').delete().eq('id',id);await cargarTodo()}
+  window.imprimirTicket=(id)=>{
+  const p=todoPedidos.find(x=>String(x.id)===String(id))
+  if(!p){alert('Pedido no encontrado');return}
+  const pagoLabels={efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
+  const pagoTxt=pagoLabels[p.metodo_pago]||'Sin especificar'
+  const fecha=new Date(p.created_at||Date.now())
+  const fechaTxt=fecha.toLocaleDateString('es-PE')+' '+fecha.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
+  const itemsHtml=(p.pedido_items||[]).map(it=>{
+    const sub=(it.cantidad*(it.precio_unit||0)*(1-(it.descuento_pct||0)/100))
+    return '<tr><td>'+it.cantidad+'x '+it.nombre+'</td><td style="text-align:right;">S/'+sub.toFixed(2)+'</td></tr>'
+  }).join('')
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ticket #'+(p.numero||'-')+'</title>'
+    +'<style>body{font-family:monospace;width:280px;margin:0 auto;padding:10px;color:#000;}h1{font-size:16px;text-align:center;margin:0 0 4px;}.sub{text-align:center;font-size:11px;margin-bottom:10px;}table{width:100%;border-collapse:collapse;font-size:12px;}td{padding:2px 0;}hr{border:none;border-top:1px dashed #000;margin:8px 0;}.tot{font-weight:bold;font-size:14px;}.info{font-size:12px;margin-bottom:4px;}@media print{body{width:100%;}}</style>'
+    +'</head><body>'
+    +'<h1>GREGORISA</h1><div class="sub">Ticket de pedido</div>'
+    +'<div class="info">Pedido: #'+(p.numero||'-')+'</div>'
+    +'<div class="info">Cliente: '+(p.cliente_nombre||'-')+'</div>'
+    +'<div class="info">Mesa: '+(p.mesa||'-')+'</div>'
+    +'<div class="info">Fecha: '+fechaTxt+'</div>'
+    +'<hr><table>'+itemsHtml+'</table><hr>'
+    +'<table><tr><td class="tot">TOTAL</td><td class="tot" style="text-align:right;">S/'+parseFloat(p.total||0).toFixed(2)+'</td></tr></table>'
+    +'<div class="info" style="margin-top:8px;">Tipo de pago: '+pagoTxt+'</div>'
+    +'<hr><div class="sub">¡Gracias por su compra!</div>'
+    +'</body></html>'
+  const w=window.open('','_blank','width=340,height=600')
+  if(!w){alert('Habilita las ventanas emergentes para imprimir el ticket.');return}
+  w.document.write(html)
+  w.document.close()
+  setTimeout(()=>{w.focus();w.print()},300)
+}
+async function eliminarPedido(id){if(miRol!=='admin'){alert('Solo el administrador puede eliminar pedidos.');return}if(!confirm('¿Eliminar este pedido de forma permanente? Esta acción no se puede deshacer.'))return;await supabase.from('pedido_items').delete().eq('pedido_id',id);await supabase.from('pedidos').delete().eq('id',id);await cargarTodo()}
 
 // ── COCINA ────────────────────────────────────────────────────
 function renderCocina(){
