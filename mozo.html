@@ -183,13 +183,22 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
     </div>
 
     <label style="font-size:11px;color:#888;margin-bottom:4px;display:block;">Cambiar estado</label>
-    <select class="modal-select" id="edit-estado">
+    <select class="modal-select" id="edit-estado" onchange="toggleEditPago()">
       <option value="espera">En espera</option>
       <option value="cocina">En cocina</option>
       <option value="listo">Listo</option>
       <option value="entregado">Entregado</option>
       <option value="cancelado">Cancelado</option>
     </select>
+    <div id="edit-pago-row" style="display:none;">
+      <label style="font-size:11px;color:#888;margin-bottom:4px;display:block;margin-top:10px;">Tipo de pago *</label>
+      <select class="modal-select" id="edit-pago">
+        <option value="">Sin especificar</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="tarjeta">Tarjeta de credito</option>
+        <option value="yape">Yape</option>
+      </select>
+    </div>
     
     <label style="font-size:11px;color:#888;margin-bottom:4px;display:block;">Nota</label>
     <input class="form-inp" type="text" id="edit-nota" placeholder="Nota...">
@@ -277,6 +286,7 @@ function renderPedidos(){
         <span class="s-pill ${sC[p.estado]||'s-espera'}">${sL[p.estado]||p.estado}</span>
         <div class="btn-row">
           ${p.estado==='listo'?`<button class="act-btn btn-entregar" onclick="entregar('${p.id}')">✓ Entregar</button>`:''}
+          ${p.estado==='entregado'?`<button class="act-btn btn-editar" onclick="imprimirTicket('${p.id}')">🖨 Imprimir</button>`:''}
           <button class="act-btn btn-editar" onclick="abrirEditarModal('${p.id}')">Editar</button>
           <button class="act-btn btn-eliminar" onclick="eliminar('${p.id}')">Eliminar</button>
         </div>
@@ -375,6 +385,8 @@ window.abrirEditarModal=(id)=>{
   
   document.getElementById('edit-num').textContent='#'+(p?.numero||'—')
   document.getElementById('edit-estado').value=p?.estado||'espera'
+  document.getElementById('edit-pago').value=p?.metodo_pago||''
+  toggleEditPago()
   document.getElementById('edit-nota').value=p?.nota||''
   
   // Reset de buscador interno
@@ -384,6 +396,11 @@ window.abrirEditarModal=(id)=>{
 
   renderItemsEdicion()
   document.getElementById('modal-editar').style.display='flex'
+}
+
+window.toggleEditPago=()=>{
+  const v=document.getElementById('edit-estado').value
+  document.getElementById('edit-pago-row').style.display=(v==='listo'||v==='entregado')?'block':'none'
 }
 
 function renderItemsEdicion() {
@@ -457,13 +474,17 @@ window.cerrarEditarModal=()=>{document.getElementById('modal-editar').style.disp
 
 window.guardarEdicion=async()=>{
   if(!editId) return
+  const estadoVal=document.getElementById('edit-estado').value
+  const pagoVal=document.getElementById('edit-pago').value
+  if((estadoVal==='listo'||estadoVal==='entregado')&&!pagoVal){alert('Debes seleccionar un tipo de pago antes de guardar.');return}
   const nuevoTotal = itemsEnEdicion.reduce((s, it) => s + (it.cantidad * (it.precio_unit || 0) * (1 - (it.descuento_pct||0)/100)), 0);
 
   try {
       await supabase.from('pedidos').update({
-        estado: document.getElementById('edit-estado').value,
+        estado: estadoVal,
         nota: document.getElementById('edit-nota').value,
-        total: nuevoTotal
+        total: nuevoTotal,
+        metodo_pago: pagoVal||null
       }).eq('id', editId);
 
       await supabase.from('pedido_items').delete().eq('pedido_id', editId);
@@ -485,12 +506,47 @@ window.guardarEdicion=async()=>{
   }
 }
 
-window.entregar=async(id)=>{await supabase.from('pedidos').update({estado:'entregado'}).eq('id',id);await cargarPedidos()}
+window.entregar=async(id)=>{
+  const p=pedidos.find(x=>String(x.id)===String(id))
+  if(!p?.metodo_pago){alert('Debes asignar un tipo de pago a este pedido antes de continuar. Usa "Editar" para seleccionarlo.');return}
+  await supabase.from('pedidos').update({estado:'entregado'}).eq('id',id);await cargarPedidos()
+}
 window.eliminar=async(id)=>{
   if(!confirm('¿Eliminar este pedido?'))return
   await supabase.from('pedido_items').delete().eq('pedido_id',id)
   await supabase.from('pedidos').delete().eq('id',id)
   await cargarPedidos()
+}
+
+window.imprimirTicket=(id)=>{
+  const p=pedidos.find(x=>String(x.id)===String(id))
+  if(!p){alert('Pedido no encontrado');return}
+  const pagoLabels={efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
+  const pagoTxt=pagoLabels[p.metodo_pago]||'Sin especificar'
+  const fecha=new Date(p.created_at||Date.now())
+  const fechaTxt=fecha.toLocaleDateString('es-PE')+' '+fecha.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
+  const itemsHtml=(p.pedido_items||[]).map(it=>{
+    const sub=(it.cantidad*(it.precio_unit||0)*(1-(it.descuento_pct||0)/100))
+    return '<tr><td>'+it.cantidad+'x '+it.nombre+'</td><td style="text-align:right;">S/'+sub.toFixed(2)+'</td></tr>'
+  }).join('')
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ticket #'+(p.numero||'-')+'</title>'
+    +'<style>body{font-family:monospace;width:280px;margin:0 auto;padding:10px;color:#000;}h1{font-size:16px;text-align:center;margin:0 0 4px;}.sub{text-align:center;font-size:11px;margin-bottom:10px;}table{width:100%;border-collapse:collapse;font-size:12px;}td{padding:2px 0;}hr{border:none;border-top:1px dashed #000;margin:8px 0;}.tot{font-weight:bold;font-size:14px;}.info{font-size:12px;margin-bottom:4px;}@media print{body{width:100%;}}</style>'
+    +'</head><body>'
+    +'<h1>GREGORISA</h1><div class="sub">Ticket de pedido</div>'
+    +'<div class="info">Pedido: #'+(p.numero||'-')+'</div>'
+    +'<div class="info">Cliente: '+(p.cliente_nombre||'-')+'</div>'
+    +'<div class="info">Mesa: '+(p.mesa||'-')+'</div>'
+    +'<div class="info">Fecha: '+fechaTxt+'</div>'
+    +'<hr><table>'+itemsHtml+'</table><hr>'
+    +'<table><tr><td class="tot">TOTAL</td><td class="tot" style="text-align:right;">S/'+parseFloat(p.total||0).toFixed(2)+'</td></tr></table>'
+    +'<div class="info" style="margin-top:8px;">Tipo de pago: '+pagoTxt+'</div>'
+    +'<hr><div class="sub">¡Gracias por su compra!</div>'
+    +'</body></html>'
+  const w=window.open('','_blank','width=340,height=600')
+  if(!w){alert('Habilita las ventanas emergentes para imprimir el ticket.');return}
+  w.document.write(html)
+  w.document.close()
+  setTimeout(()=>{w.focus();w.print()},300)
 }
 
 async function cargarHistorial(){
