@@ -559,6 +559,8 @@ window.descargarHistorialCSV=()=>{
   URL.revokeObjectURL(url)
 }
 
+window.cargarHistorial = cargarHistorial
+
 window.setTab=(id,el)=>{
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'))
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
