@@ -878,7 +878,7 @@ window.guardarNuevoPlato=async()=>{
   cerrarModalNuevo()
   await cargarMenu()
 }
-window.avanzar=async(id,n)=>{await supabase.from('pedidos').update({estado:n}).eq('id',id);await cargarTodo()}
+window.avanzar=async(id,n)=>{if((n==='listo'||n==='entregado')){const p=todoPedidos.find(x=>String(x.id)===String(id));if(!p?.metodo_pago){alert('Debes asignar un tipo de pago a este pedido antes de continuar. Usa "Editar" para seleccionarlo.');return}}await supabase.from('pedidos').update({estado:n}).eq('id',id);await cargarTodo()}
 window.cancelar=async(id)=>{if(!confirm('¿Cancelar este pedido?'))return;await supabase.from('pedidos').update({estado:'cancelado'}).eq('id',id);await cargarTodo()}
 window.cerrarModal=()=>{document.getElementById('modal').style.display='none';editId=null}
 window.setTab=(id,el)=>{
