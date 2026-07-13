@@ -340,7 +340,7 @@ window.confirmarPedido=async()=>{
   const{data:pedido,error}=await supabase
     .from('pedidos')
     .insert([{cliente_nombre:clienteNombre,cliente_tel:clienteTel,mesa:clienteMesa,estado:'espera',total,nota}])
-    .select().single()
+    .select('id, numero').single()
 
   if(!error&&pedido){
     await supabase.from('pedido_items').insert(items.map(it=>({
