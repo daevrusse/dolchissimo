@@ -324,7 +324,7 @@ window.abrirCarrito=()=>{
     </div>`).join('')}
     <div class="total-row"><span>Total</span><span style="color:##B7E4C7">S/ ${subtotal().toFixed(2)}</span></div>
     <input class="form-inp" type="text" id="m-nombre" placeholder="Nombre del cliente">
-    <input class="form-inp" type="text" id="m-mesa" placeholder="Mesa (ej: Mesa 3)">
+    <select class="form-inp" id="m-mesa"><option value="">Selecciona mesa</option><option value="Mesa 1">Mesa 1</option><option value="Mesa 2">Mesa 2</option><option value="Mesa 3">Mesa 3</option><option value="Mesa 4">Mesa 4</option><option value="Para llevar">Para llevar</option><option value="Delivery">Delivery</option></select>
     <input class="form-inp" type="text" id="m-nota" placeholder="Nota para cocina"><select class="form-inp" id="m-pago"><option value="">Método de pago</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta de crédito</option><option value="yape">Yape</option></select>
     <button class="confirm-btn" onclick="confirmarPedido()">Enviar a cocina ✓</button>
     <button class="cancel-btn" onclick="document.getElementById('modal-carrito').style.display='none'">Cancelar</button>`
