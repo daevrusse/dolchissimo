@@ -156,7 +156,10 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 <div class="view" id="v-historial">
   <div class="card">
     <div class="card-title">MI HISTORIAL</div>
-    <input type="date" class="form-inp" id="historial-fecha" onchange="cargarHistorial()">
+    <label style="font-size:11px;color:#888;">Desde</label>
+    <input type="date" class="form-inp" id="historial-desde" onchange="cargarHistorial()">
+    <label style="font-size:11px;color:#888;">Hasta</label>
+    <input type="date" class="form-inp" id="historial-hasta" onchange="cargarHistorial()">
     <button class="confirm-btn" style="margin-bottom:14px;" onclick="descargarHistorialCSV()">⬇ Descargar CSV</button>
     <div id="historial-list"><div class="loading-txt">Cargando...</div></div>
   </div>
@@ -491,18 +494,22 @@ window.eliminar=async(id)=>{
 }
 
 async function cargarHistorial(){
-  const inp = document.getElementById('historial-fecha')
-  if(!inp.value){ inp.value = new Date().toISOString().slice(0,10) }
-  const fecha = inp.value
+  const inpD = document.getElementById('historial-desde')
+  const inpH = document.getElementById('historial-hasta')
+  const hoy = new Date().toISOString().slice(0,10)
+  if(!inpD.value){ inpD.value = hoy }
+  if(!inpH.value){ inpH.value = hoy }
+  const desde = inpD.value
+  const hasta = inpH.value
   const nombre = localStorage.getItem('ff58_nombre')||''
-  const{data} = await supabase.from('pedidos').select('*, pedido_items(*)').in('estado',['entregado','cancelado']).eq('atendido_por',nombre).gte('created_at',fecha+'T00:00:00').lte('created_at',fecha+'T23:59:59.999').order('created_at',{ascending:false})
+  const{data} = await supabase.from('pedidos').select('*, pedido_items(*)').in('estado',['entregado','cancelado']).eq('atendido_por',nombre).gte('created_at',desde+'T00:00:00').lte('created_at',hasta+'T23:59:59.999').order('created_at',{ascending:false})
   historialPedidos = data||[]
   renderHistorial()
 }
 
 function renderHistorial(){
   const cont = document.getElementById('historial-list')
-  if(historialPedidos.length===0){cont.innerHTML='<div class="loading-txt">Sin pedidos en esta fecha</div>';return}
+  if(historialPedidos.length===0){cont.innerHTML='<div class="loading-txt">Sin pedidos en este rango de fechas</div>';return}
   const sL = {entregado:'Entregado',cancelado:'Cancelado'}
   const sC = {entregado:'s-entregado',cancelado:'s-cancelado'}
   cont.innerHTML = historialPedidos.map(p=>`
@@ -521,7 +528,7 @@ function renderHistorial(){
 }
 
 window.descargarHistorialCSV=()=>{
-  if(!historialPedidos || historialPedidos.length===0){alert('No hay pedidos para descargar en esta fecha.');return}
+  if(!historialPedidos || historialPedidos.length===0){alert('No hay pedidos para descargar en este rango de fechas.');return}
   const pagoLbl = {efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
   const filas = [['Pedido','Cliente','Mesa','Items','Total','Tipo de pago','Fecha','Atendido por']]
   historialPedidos.forEach(p=>{
@@ -542,9 +549,10 @@ window.descargarHistorialCSV=()=>{
   const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
-  const fecha = document.getElementById('historial-fecha').value
+  const desde = document.getElementById('historial-desde').value
+  const hasta = document.getElementById('historial-hasta').value
   a.href = url
-  a.download = `historial_${(localStorage.getItem('ff58_nombre')||'mozo').replace(/\s+/g,'_')}_${fecha}.csv`
+  a.download = `historial_${(localStorage.getItem('ff58_nombre')||'mozo').replace(/\s+/g,'_')}_${desde}_a_${hasta}.csv`
   document.body.appendChild(a)
   a.click()
   a.remove()
