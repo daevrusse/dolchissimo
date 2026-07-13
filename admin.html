@@ -383,7 +383,7 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
       <option value="cancelado">Cancelado</option>
     </select>
     <div id="modal-pago-row" style="display:none;">
-      <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;margin-top:10px;">Tipo de pago</label>
+      <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;margin-top:10px;">Tipo de pago *</label>
       <select class="modal-select" id="modal-pago">
         <option value="">Sin especificar</option>
         <option value="efectivo">Efectivo</option>
@@ -833,6 +833,9 @@ window.addNewItemToEdit=(menuId)=>{
 }
 window.guardarEdicion=async()=>{
   if(!editId)return
+  const estadoVal=document.getElementById('modal-estado').value
+  const pagoVal=document.getElementById('modal-pago').value
+  if((estadoVal==='listo'||estadoVal==='entregado')&&!pagoVal){alert('Debes seleccionar un tipo de pago antes de guardar.');return}
   const nuevoTotal=itemsEnEdicion.reduce((s,it)=>s+(it.cantidad*(it.precio_unit||0)*(1-(it.descuento_pct||0)/100)),0)
   try{
     await supabase.from('pedidos').update({estado:document.getElementById('modal-estado').value,nota:document.getElementById('modal-nota').value,total:nuevoTotal,metodo_pago:document.getElementById('modal-pago').value||null}).eq('id',editId)
