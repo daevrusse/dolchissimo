@@ -375,13 +375,22 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
       <div id="edit-search-results"></div>
     </div>
     <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Estado</label>
-    <select class="modal-select" id="modal-estado">
+    <select class="modal-select" id="modal-estado" onchange="toggleModalPago()">
       <option value="espera">En espera</option>
       <option value="cocina">En cocina</option>
       <option value="listo">Listo</option>
       <option value="entregado">Entregado</option>
       <option value="cancelado">Cancelado</option>
     </select>
+    <div id="modal-pago-row" style="display:none;">
+      <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;margin-top:10px;">Tipo de pago</label>
+      <select class="modal-select" id="modal-pago">
+        <option value="">Sin especificar</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="tarjeta">Tarjeta de credito</option>
+        <option value="yape">Yape</option>
+      </select>
+    </div>
     <label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nota</label>
     <input class="modal-input" type="text" id="modal-nota" placeholder="Nota para cocina...">
     <div class="modal-btns">
@@ -771,6 +780,10 @@ function renderMenu(){
 }
 
 // ── MODAL AVANZADO ────────────────────────────────────────────
+window.toggleModalPago=()=>{
+  const est=document.getElementById('modal-estado').value
+  document.getElementById('modal-pago-row').style.display=(est==='listo'||est==='entregado')?'block':'none'
+}
 window.abrirModal=(id)=>{
   editId=id
   const p=todoPedidos.find(x=>String(x.id)===String(id))
@@ -778,6 +791,8 @@ window.abrirModal=(id)=>{
   document.getElementById('modal-num').textContent='#'+(p?.numero||'—')
   document.getElementById('modal-estado').value=p?.estado||'espera'
   document.getElementById('modal-nota').value=p?.nota||''
+  document.getElementById('modal-pago').value=p?.metodo_pago||''
+  toggleModalPago()
   document.getElementById('edit-search-box').style.display='none'
   document.getElementById('edit-search-inp').value=''
   document.getElementById('edit-search-results').style.display='none'
@@ -820,7 +835,7 @@ window.guardarEdicion=async()=>{
   if(!editId)return
   const nuevoTotal=itemsEnEdicion.reduce((s,it)=>s+(it.cantidad*(it.precio_unit||0)*(1-(it.descuento_pct||0)/100)),0)
   try{
-    await supabase.from('pedidos').update({estado:document.getElementById('modal-estado').value,nota:document.getElementById('modal-nota').value,total:nuevoTotal}).eq('id',editId)
+    await supabase.from('pedidos').update({estado:document.getElementById('modal-estado').value,nota:document.getElementById('modal-nota').value,total:nuevoTotal,metodo_pago:document.getElementById('modal-pago').value||null}).eq('id',editId)
     await supabase.from('pedido_items').delete().eq('pedido_id',editId)
     if(itemsEnEdicion.length>0)await supabase.from('pedido_items').insert(itemsEnEdicion.map(it=>({pedido_id:editId,menu_item_id:it.menu_item_id,nombre:it.nombre,cantidad:it.cantidad,precio_unit:it.precio_unit,descuento_pct:it.descuento_pct||0})))
     cerrarModal();await cargarTodo()
