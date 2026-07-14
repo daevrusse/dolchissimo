@@ -286,7 +286,7 @@ function renderPedidos(){
         <span class="s-pill ${sC[p.estado]||'s-espera'}">${sL[p.estado]||p.estado}</span>
         <div class="btn-row">
           ${p.estado==='listo'?`<button class="act-btn btn-entregar" onclick="entregar('${p.id}')">✓ Entregar</button>`:''}
-          ${p.estado==='entregado'?`<button class="act-btn btn-editar" onclick="imprimirTicket('${p.id}')">🖨 Imprimir</button>`:''}
+                        <button class="act-btn btn-editar" onclick="imprimirTicket('${p.id}')">🖨 Imprimir</button>
           <button class="act-btn btn-editar" onclick="abrirEditarModal('${p.id}')">Editar</button>
           <button class="act-btn btn-eliminar" onclick="eliminar('${p.id}')">Eliminar</button>
         </div>
