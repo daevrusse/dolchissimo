@@ -156,11 +156,6 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 <div class="view" id="v-historial">
   <div class="card">
     <div class="card-title">MI HISTORIAL</div>
-    <label style="font-size:11px;color:#888;">Desde</label>
-    <input type="date" class="form-inp" id="historial-desde" onchange="cargarHistorial()">
-    <label style="font-size:11px;color:#888;">Hasta</label>
-    <input type="date" class="form-inp" id="historial-hasta" onchange="cargarHistorial()">
-    <button class="confirm-btn" style="margin-bottom:14px;" onclick="descargarHistorialCSV()">⬇ Descargar CSV</button>
     <div id="historial-list"><div class="loading-txt">Cargando...</div></div>
   </div>
 </div>
@@ -550,14 +545,11 @@ window.imprimirTicket=(id)=>{
 }
 
 async function cargarHistorial(){
-  const inpD = document.getElementById('historial-desde')
-  const inpH = document.getElementById('historial-hasta')
-  const hoy = new Date().toISOString().slice(0,10)
-  if(!inpD.value){ inpD.value = hoy }
-  if(!inpH.value){ inpH.value = hoy }
-  const desde = inpD.value
-  const hasta = inpH.value
-  const nombre = localStorage.getItem('ff58_nombre')||''
+  const hoyDate = new Date()
+    const desdeDate = new Date(); desdeDate.setDate(desdeDate.getDate()-30)
+      const hasta = hoyDate.toISOString().slice(0,10)
+        const desde = desdeDate.toISOString().slice(0,10)
+          const nombre = localStorage.getItem('ff58_nombre')||''
   const{data} = await supabase.from('pedidos').select('*, pedido_items(*)').in('estado',['entregado','cancelado']).eq('atendido_por',nombre).gte('created_at',desde+'T00:00:00').lte('created_at',hasta+'T23:59:59.999').order('created_at',{ascending:false})
   historialPedidos = data||[]
   renderHistorial()
@@ -582,38 +574,6 @@ function renderHistorial(){
         ${p.estado==='entregado'?`<button class="act-btn btn-editar" onclick="imprimirTicket('${p.id}')">🖨 Imprimir</button>`:''}
       </div>
     </div>`).join('')
-}
-
-window.descargarHistorialCSV=()=>{
-  if(!historialPedidos || historialPedidos.length===0){alert('No hay pedidos para descargar en este rango de fechas.');return}
-  const pagoLbl = {efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
-  const filas = [['Pedido','Cliente','Mesa','Items','Total','Tipo de pago','Fecha','Atendido por']]
-  historialPedidos.forEach(p=>{
-    const itemsTxt = (p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}`).join(' | ')
-    const fechaTxt = new Date(p.created_at).toLocaleString('es-PE')
-    filas.push([
-      '#'+(p.numero||''),
-      p.cliente_nombre||'',
-      p.mesa||'',
-      itemsTxt,
-      Number(p.total||0).toFixed(2),
-      pagoLbl[p.metodo_pago]||p.metodo_pago||'',
-      fechaTxt,
-      p.atendido_por||''
-    ])
-  })
-  const csv = filas.map(f=>f.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n')
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'})
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  const desde = document.getElementById('historial-desde').value
-  const hasta = document.getElementById('historial-hasta').value
-  a.href = url
-  a.download = `historial_${(localStorage.getItem('ff58_nombre')||'mozo').replace(/\s+/g,'_')}_${desde}_a_${hasta}.csv`
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
 }
 
 window.cargarHistorial = cargarHistorial
