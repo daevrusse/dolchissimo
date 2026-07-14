@@ -546,10 +546,9 @@ window.imprimirTicket=(id)=>{
 
 async function cargarHistorial(){
   const hoyDate = new Date()
-    const desdeDate = new Date(); desdeDate.setDate(desdeDate.getDate()-30)
-      const hasta = hoyDate.toISOString().slice(0,10)
-        const desde = desdeDate.toISOString().slice(0,10)
-          const nombre = localStorage.getItem('ff58_nombre')||''
+    const hasta = hoyDate.toISOString().slice(0,10)
+      const desde = hasta
+        const nombre = localStorage.getItem('ff58_nombre')||''
   const{data} = await supabase.from('pedidos').select('*, pedido_items(*)').in('estado',['entregado','cancelado']).eq('atendido_por',nombre).gte('created_at',desde+'T00:00:00').lte('created_at',hasta+'T23:59:59.999').order('created_at',{ascending:false})
   historialPedidos = data||[]
   renderHistorial()
