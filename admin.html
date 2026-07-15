@@ -254,7 +254,13 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
         <div><div class="dl">Hasta</div><input class="di" type="date" id="fecha-hasta"></div>
         <button class="apply-btn" onclick="aplicarFechasPersonalizadas()">Aplicar</button>
       </div>
-      <div class="fi" id="filter-info">Mostrando: <span>Hoy</span></div>
+      
+
+    <!-- EGRESOS -->
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title" style="justify-content:space-between;display:flex;">💸 Egresos <button style="font-size:11px;color:#86efac;background:transparent;border:none;cursor:pointer;" onclick="abrirModalEgreso()">+ Registrar egreso</button></div>
+      <div id="egresos-total" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;">S/0.00</div>
+      <div id="egresos-list"></div>
     </div>
 
     <!-- MÉTRICAS -->
@@ -424,14 +430,45 @@ body{background:#0a0a0a;font-family:system-ui,sans-serif;color:#e2e8f0;min-heigh
   </div>
 </div>
 
-<div class="modal-bottom" id="modal-nuevo-usuario" style="display:none"><div class="modal-sheet"><div class="modal-title">Crear nuevo usuario</div><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre *</label><input class="modal-input" type="text" id="nu-nombre" placeholder="Ej: Juan Pérez"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Email *</label><input class="modal-input" type="email" id="nu-email" placeholder="Ej: juan@gregorisa.com"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Contraseña temporal *</label><input class="modal-input" type="text" id="nu-pass" placeholder="Mínimo 6 caracteres"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Rol *</label><select class="modal-select" id="nu-rol"><option value="mozo">Mozo</option><option value="cocina">Cocina / Barra</option><option value="admin">Administrador</option></select><div class="modal-btns"><button class="modal-cancel" onclick="cerrarModalNuevoUsuario()">Cancelar</button><button class="modal-ok" onclick="crearUsuario()">Crear usuario</button></div></div></div><div class="modal-bottom" id="modal-editar-usuario" style="display:none"><div class="modal-sheet"><div class="modal-title">Editar usuario</div><input type="hidden" id="eu-id"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre *</label><input class="modal-input" type="text" id="eu-nombre"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Email</label><input class="modal-input" type="email" id="eu-email" disabled style="opacity:0.6;"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Rol *</label><select class="modal-select" id="eu-rol"><option value="mozo">Mozo</option><option value="cocina">Cocina / Barra</option><option value="admin">Administrador</option></select><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;margin-top:6px;">Nueva contraseña temporal (opcional)</label><input class="modal-input" type="text" id="eu-pass" placeholder="Dejar vacío para no cambiarla"><div class="modal-btns"><button class="modal-cancel" onclick="cerrarModalEditarUsuario()">Cancelar</button><button class="modal-ok" onclick="guardarEdicionUsuario()">Guardar cambios</button></div></div></div><script src="daterangepicker.js"></script><script type="module">
+<div class="modal-bottom" id="modal-nuevo-usuario" style="display:none"><div class="modal-sheet"><div class="modal-title">Crear nuevo usuario</div><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre *</label><input class="modal-input" type="text" id="nu-nombre" placeholder="Ej: Juan Pérez"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Email *</label><input class="modal-input" type="email" id="nu-email" placeholder="Ej: juan@gregorisa.com"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Contraseña temporal *</label><input class="modal-input" type="text" id="nu-pass" placeholder="Mínimo 6 caracteres"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Rol *</label><select class="modal-select" id="nu-rol"><option value="mozo">Mozo</option><option value="cocina">Cocina / Barra</option><option value="admin">Administrador</option></select><div class="modal-btns"><button class="modal-cancel" onclick="cerrarModalNuevoUsuario()">Cancelar</button><button class="modal-ok" onclick="crearUsuario()">Crear usuario</button></div></div></div><div class="modal-bottom" id="modal-editar-usuario" style="display:none"><div class="modal-sheet"><div class="modal-title">Editar usuario</div><input type="hidden" id="eu-id"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre *</label><input class="modal-input" type="text" id="eu-nombre"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Email</label><input class="modal-input" type="email" id="eu-email" disabled style="opacity:0.6;"><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Rol *</label><select class="modal-select" id="eu-rol"><option value="mozo">Mozo</option><option value="cocina">Cocina / Barra</option><option value="admin">Administrador</option></select><label style="font-size:11px;color:#555;margin-bottom:4px;display:block;margin-top:6px;">Nueva contraseña temporal (opcional)</label><input class="modal-input" type="text" id="eu-pass" placeholder="Dejar vacío para no cambiarla"><div class="modal-btns"><button class="modal-cancel" onclick="cerrarModalEditarUsuario()">Cancelar</button><button class="modal-ok" onclick="guardarEdicionUsuario()">Guardar cambios</button></div></div></div><div class="modal-bottom" id="modal-egreso" style="display:none">
+<div class="modal-sheet">
+<div class="modal-title">Registrar egreso</div>
+<label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre del proveedor *</label>
+<input class="modal-input" type="text" id="eg-proveedor" placeholder="Ej: Distribuidora ABC">
+<label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Descripción</label>
+<input class="modal-input" type="text" id="eg-descripcion" placeholder="Ej: Compra de insumos">
+<label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Monto (S/) *</label>
+<input class="modal-input" type="number" step="0.10" min="0" id="eg-monto" placeholder="Ej: 50.00">
+<div class="modal-btns">
+<button class="modal-cancel" onclick="cerrarModalEgreso()">Cancelar</button>
+<button class="modal-ok" onclick="guardarEgreso()">Guardar egreso</button>
+</div>
+</div>
+</div>
+<div class="modal-bottom" id="modal-editar-egreso" style="display:none">
+<div class="modal-sheet">
+<div class="modal-title">Editar egreso</div>
+<input type="hidden" id="ee-id">
+<label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Nombre del proveedor *</label>
+<input class="modal-input" type="text" id="ee-proveedor">
+<label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Descripción</label>
+<input class="modal-input" type="text" id="ee-descripcion">
+<label style="font-size:11px;color:#555;margin-bottom:4px;display:block;">Monto (S/) *</label>
+<input class="modal-input" type="number" step="0.10" min="0" id="ee-monto">
+<div class="modal-btns">
+<button class="modal-cancel" onclick="cerrarModalEditarEgreso()">Cancelar</button>
+<button class="modal-ok" onclick="guardarEdicionEgreso()">Guardar cambios</button>
+</div>
+</div>
+</div>
+<script src="daterangepicker.js"></script><script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4'
 const supabase = createClient(
   'https://rsebinhkyijetmfwnugl.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWJpbmhreWlqZXRtZndudWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0Mzk1NzEsImV4cCI6MjA5MzAxNTU3MX0.C4WlOxrG6ilhDfaMkFhtfl_HxLRXC2Pkf4gcpGZTouE'
 )
 
-let todoPedidos=[],menuItems=[],catActiva='Todo',editId=null,itemsEnEdicion=[],miRol='',usuariosCache=[]
+let todoPedidos=[],menuItems=[],catActiva='Todo',editId=null,itemsEnEdicion=[],miRol='',usuariosCache=[],todoEgresos=[],miNombre=''
 let fechaDesde='',fechaHasta='',periodoLabel='Hoy';function initDateRangePickerUI(){var fr=document.querySelector('.filter-row');var dr=document.querySelector('.date-row');if(fr)fr.style.display='none';if(dr)dr.style.display='none';var c=document.createElement('div');c.id='drp-filtro';c.style.marginBottom='10px';if(fr&&fr.parentNode)fr.parentNode.insertBefore(c,fr);window.drp=new DateRangePicker('#drp-filtro',{locale:'es',start:new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'}),end:new Date().toLocaleDateString('en-CA',{timeZone:'America/Lima'}),onApply:function(r){fechaDesde=r.start+'T00:00:00-05:00';fechaHasta=r.end+'T23:59:59-05:00';periodoLabel=r.label;var fi=document.getElementById('filter-info');if(fi)fi.innerHTML='Mostrando: <span>'+r.label+'</span>';cargarTodo();}});}
 
 setInterval(()=>{const el=document.getElementById('clk');if(el)el.textContent=new Date().toLocaleTimeString('es-PE')},1000)
@@ -448,7 +485,7 @@ async function verificarRol(email){
   if(u.rol==='mozo'){window.location.href='/mozo.html';return}
   document.getElementById('auth-guard').style.display='none'
   document.getElementById('app').style.display='block'
-  document.getElementById('admin-sub').textContent='Admin: '+u.nombre
+  document.getElementById('admin-sub').textContent='Admin: '+u.nombre;miNombre=u.nombre
   iniciarApp()
 }
 window.doLogin=async()=>{
@@ -506,9 +543,11 @@ window.aplicarFechasPersonalizadas=()=>{
 async function cargarTodo(){
   const{data}=await supabase.from('pedidos').select('*, pedido_items(*)').gte('created_at',fechaDesde).lte('created_at',fechaHasta).order('created_at',{ascending:false})
   todoPedidos=data||[]
+  const{data:egData}=await supabase.from('egresos').select('*').gte('created_at',fechaDesde).lte('created_at',fechaHasta).order('created_at',{ascending:false})
+  todoEgresos=egData||[]
   const{data:actData}=await supabase.from('pedidos').select('id').neq('estado','entregado').neq('estado','cancelado')
   document.getElementById('ped-badge').textContent=(actData||[]).length
-  renderDashboard();renderPedidos();renderCocina()
+  renderDashboard();renderPedidos();renderCocina();renderEgresos()
 }
 function exportarVentasCSV(){if(!todoPedidos.length){alert('No hay pedidos en el periodo seleccionado.');return}const headers=['Numero','Fecha','Hora','Cliente','Mesa','Items','Estado','Total','Mozo','Metodo de pago'];const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';const rows=todoPedidos.map(p=>{const d=new Date(p.created_at);const fecha=d.toLocaleDateString('en-CA',{timeZone:'America/Lima'});const hora=d.toLocaleTimeString('es-PE',{timeZone:'America/Lima'});const items=(p.pedido_items||[]).map(i=>i.cantidad+'x '+i.nombre).join('; ');return [p.numero||'',fecha,hora,p.cliente_nombre||'',p.mesa||'',items,p.estado||'',parseFloat(p.total||0).toFixed(2),p.atendido_por||'',p.metodo_pago||''].map(esc).join(',')});const csv='\uFEFF'+headers.map(esc).join(',')+''+String.fromCharCode(10)+rows.join(String.fromCharCode(10));const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ventas_'+fechaDesde.split('T')[0]+'_a_'+fechaHasta.split('T')[0]+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}function exportarPlatosCSV(){const c={},tot={};todoPedidos.forEach(p=>{(p.pedido_items||[]).forEach(it=>{c[it.nombre]=(c[it.nombre]||0)+it.cantidad;tot[it.nombre]=(tot[it.nombre]||0)+(it.cantidad*parseFloat(it.precio_unit||0))})});const s=Object.entries(c).sort((a,b)=>b[1]-a[1]);if(!s.length){alert('No hay platos vendidos en el periodo seleccionado.');return}const headers=['Plato','Unidades','Total'];const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';const rows=s.map(([n,q])=>[n,q,(tot[n]||0).toFixed(2)].map(esc).join(','));const csv='\uFEFF'+headers.map(esc).join(',')+String.fromCharCode(10)+rows.join(String.fromCharCode(10));const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='platos_'+fechaDesde.split('T')[0]+'_a_'+fechaHasta.split('T')[0]+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}async function cargarMenu(){
   const{data}=await supabase.from('menu_items').select('*').order('categoria')
@@ -638,12 +677,73 @@ function renderDonutCategorias(ent){
 }
 
 function renderTipoPago(ent){
-    const labels={efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'}
-        const v={};ent.forEach(p=>{const m=p.metodo_pago||'sin_especificar';v[m]=(v[m]||0)+parseFloat(p.total||0)})
-            const s=Object.entries(v).sort((a,b)=>b[1]-a[1])
-                if(s.length===0){document.getElementById('rank-pago').innerHTML='<div class="loading-txt">Sin datos</div>';return}
-    const mx=s[0][1]
-        document.getElementById('rank-pago').innerHTML=s.map(([m,val])=>`<div class="rank-item"><span class="rank-name">${labels[m]||'Sin especificar'}</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:${Math.round(val/mx*100)}%;"></div></div><div style="text-align:right;"><div class="rank-val">S/${val.toFixed(2)}</div></div></div>`).join('')
+  var labels={efectivo:'Efectivo',tarjeta:'Tarjeta de credito',yape:'Yape'};
+  var v={};ent.forEach(function(p){var m=p.metodo_pago||'sin_especificar';v[m]=(v[m]||0)+parseFloat(p.total||0)});
+  var totalEgresos=(todoEgresos||[]).reduce(function(s,e){return s+parseFloat(e.monto||0)},0);
+  if(totalEgresos>0){v.efectivo=(v.efectivo||0)-totalEgresos}
+  var s=Object.entries(v).sort(function(a,b){return b[1]-a[1]});
+  if(s.length===0){document.getElementById('rank-pago').innerHTML='<div class="loading-txt">Sin datos</div>';return}
+  var mx=Math.max.apply(null,s.map(function(x){return Math.abs(x[1])}).concat([1]));
+  document.getElementById('rank-pago').innerHTML=s.map(function(pair){
+    var m=pair[0], val=pair[1];
+    return '<div class="rank-item"><span class="rank-name">'+(labels[m]||'Sin especificar')+'</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:'+Math.round(Math.abs(val)/mx*100)+'%;"></div></div><div style="text-align:right;"><div class="rank-val">S/'+val.toFixed(2)+'</div></div></div>';
+  }).join('') + (totalEgresos>0 ? ('<div style="font-size:10px;color:#86efac;margin-top:6px;">− S/'+totalEgresos.toFixed(2)+' en egresos ya restados del efectivo</div>') : '');
+}
+
+function renderEgresos(){
+  var total=(todoEgresos||[]).reduce(function(s,e){return s+parseFloat(e.monto||0)},0);
+  var totEl=document.getElementById('egresos-total');
+  if(totEl)totEl.textContent='S/'+total.toFixed(2);
+  var listEl=document.getElementById('egresos-list');
+  if(!listEl)return;
+  if(!todoEgresos||todoEgresos.length===0){listEl.innerHTML='<div class="loading-txt">Sin egresos en el período</div>';return}
+  listEl.innerHTML=todoEgresos.map(function(e){
+    return '<div class="pedido-row"><div class="ped-info"><div class="ped-nombre">'+e.proveedor+'</div><div class="ped-items">'+(e.descripcion||'')+'</div><div class="btn-row"><button class="act-btn btn-ed" onclick="abrirModalEditarEgreso(\''+e.id+'\')">Editar</button><button class="act-btn btn-ca" onclick="eliminarEgreso(\''+e.id+'\')">Eliminar</button></div></div><div class="ped-total">S/'+parseFloat(e.monto||0).toFixed(2)+'</div></div>';
+  }).join('');
+}
+window.abrirModalEgreso=function(){
+  document.getElementById('eg-proveedor').value='';
+  document.getElementById('eg-descripcion').value='';
+  document.getElementById('eg-monto').value='';
+  document.getElementById('modal-egreso').style.display='flex';
+}
+window.cerrarModalEgreso=function(){document.getElementById('modal-egreso').style.display='none'}
+window.guardarEgreso=async function(){
+  const proveedor=document.getElementById('eg-proveedor').value.trim();
+  const descripcion=document.getElementById('eg-descripcion').value.trim();
+  const monto=parseFloat(document.getElementById('eg-monto').value);
+  if(!proveedor||!monto||monto<=0){alert('Completa proveedor y un monto válido.');return}
+  const{error}=await supabase.from('egresos').insert({proveedor,descripcion:descripcion||null,monto,registrado_por:miNombre||''});
+  if(error){alert('Error al guardar: '+error.message);return}
+  window.cerrarModalEgreso();
+  cargarTodo();
+}
+window.abrirModalEditarEgreso=function(id){
+  const e=(todoEgresos||[]).find(function(x){return x.id===id});
+  if(!e)return;
+  document.getElementById('ee-id').value=e.id;
+  document.getElementById('ee-proveedor').value=e.proveedor||'';
+  document.getElementById('ee-descripcion').value=e.descripcion||'';
+  document.getElementById('ee-monto').value=e.monto;
+  document.getElementById('modal-editar-egreso').style.display='flex';
+}
+window.cerrarModalEditarEgreso=function(){document.getElementById('modal-editar-egreso').style.display='none'}
+window.guardarEdicionEgreso=async function(){
+  const id=document.getElementById('ee-id').value;
+  const proveedor=document.getElementById('ee-proveedor').value.trim();
+  const descripcion=document.getElementById('ee-descripcion').value.trim();
+  const monto=parseFloat(document.getElementById('ee-monto').value);
+  if(!proveedor||!monto||monto<=0){alert('Completa proveedor y un monto válido.');return}
+  const{error}=await supabase.from('egresos').update({proveedor,descripcion:descripcion||null,monto}).eq('id',id);
+  if(error){alert('Error al guardar: '+error.message);return}
+  window.cerrarModalEditarEgreso();
+  cargarTodo();
+}
+window.eliminarEgreso=async function(id){
+  if(!confirm('¿Eliminar este egreso? Esta acción no se puede deshacer.'))return;
+  const{error}=await supabase.from('egresos').delete().eq('id',id);
+  if(error){alert('Error al eliminar: '+error.message);return}
+  cargarTodo();
 }
   
   function renderRankMesas(ent){
