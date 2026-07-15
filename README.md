@@ -56,3 +56,13 @@ GREGORISA_ANON_KEY      →  eyJ...tu_anon_key
 | Menú | Hamburguesas, Chifa, Caldo | Café especialidad, Waffles, Brunch |
 | Supabase | Proyecto propio | Proyecto separado (misma cuenta) |
 | Vercel | Propio | Proyecto separado (misma cuenta) |
+
+## Integración Culqi
+
+La versión actual incluye Culqi Checkout Custom, registro seguro de cargos y tickets con referencia de pago.
+
+1. Ejecuta `supabase_culqi_migration.sql` si tu base ya existe.
+2. Configura las variables indicadas en `.env.example` dentro de Vercel.
+3. Revisa el manual `DOCUMENTACION_CULQI.md`.
+
+> La integración corresponde a pagos online mediante Checkout. El control directo del lector o impresora interna del Smart POS P3 requiere documentación privada de Culqi.

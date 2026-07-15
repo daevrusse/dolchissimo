@@ -26,9 +26,9 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 .ped-nombre{font-size:12px;color:#e2e8f0;font-weight:500;}
 .ped-items{font-size:11px;color:#555;margin-top:2px;}
 .ped-nota{font-size:11px;color:#fb923c;margin-top:2px;}
-.ped-total{font-size:12px;font-weight:600;color:##B7E4C7;}
+.ped-total{font-size:12px;font-weight:600;color:#B7E4C7;}
 .s-pill{font-size:10px;padding:2px 8px;border-radius:8px;}
-.s-espera{background:#1a1a00;color:##B7E4C7;border:0.5px solid #666600;}
+.s-espera{background:#1a1a00;color:#B7E4C7;border:0.5px solid #666600;}
 .s-cocina{background:#1a1a2e;color:#818cf8;border:0.5px solid #312e81;}
 .s-listo{background:#0a2e1e;color:#34d399;border:0.5px solid #064e35;}
 .s-entregado{background:#1e1e1e;color:#555;border:0.5px solid #333;}
@@ -52,7 +52,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 .item-icon{width:44px;height:44px;background:#111;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .item-name{font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:2px;}
 .item-desc{font-size:11px;color:#555;}
-.item-price{font-size:14px;font-weight:700;color:##B7E4C7;}
+.item-price{font-size:14px;font-weight:700;color:#B7E4C7;}
 .add-btn{font-size:11px;padding:5px 12px;border-radius:16px;border:1px solid;cursor:pointer;background:transparent;}
 .add-idle{color:#2D6A4F;border-color:#2D6A4F;}
 .add-done{color:#34d399;border-color:#34d399;background:#0a2e1e;}
@@ -70,7 +70,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 .mi-name{font-size:12px;color:#94a3b8;flex:1;}
 .mi-btn{width:24px;height:24px;border-radius:5px;background:#2a2a2a;border:1px solid #333;color:#e2e8f0;cursor:pointer;font-size:14px;}
 .mi-qty{font-size:13px;font-weight:600;min-width:18px;text-align:center;color:#e2e8f0;}
-.mi-price{font-size:12px;font-weight:600;color:##B7E4C7;min-width:44px;text-align:right;}
+.mi-price{font-size:12px;font-weight:600;color:#B7E4C7;min-width:44px;text-align:right;}
 .total-row{display:flex;justify-content:space-between;font-size:15px;font-weight:700;padding:12px 0;border-top:1px solid #333;margin:8px 0;}
 .form-inp{width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:10px 12px;font-size:13px;color:#e2e8f0;outline:none;margin-bottom:10px;font-family:inherit;}
 .form-inp::placeholder{color:#444;}
@@ -207,6 +207,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 
 </div>
 
+<script src="https://js.culqi.com/checkout-js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0'
 const supabase = createClient(
@@ -215,11 +216,22 @@ const supabase = createClient(
 )
 
 let pedidos=[], menuItems=[], cart={}, catActiva='Todo', editId=null, itemsEnEdicion = [], historialPedidos = []
+let culqiConfig={enabled:false,publicKey:''}, culqiInstance=null, pedidoEnCobro=null, currentUserEmail=''
 
 // ── AUTH GUARD ──────────────────────────────
 async function init(){
   const{data:{session}}=await supabase.auth.getSession()
-  if(session) await verificarRol(session.user.email)
+  if(session){ currentUserEmail=session.user.email||''; await cargarConfigCulqi(); await verificarRol(session.user.email) }
+}
+
+async function cargarConfigCulqi(){
+  try{
+    const r=await fetch('/api/culqi-config',{cache:'no-store'})
+    culqiConfig=await r.json()
+  }catch(e){
+    console.warn('Culqi no configurado',e)
+    culqiConfig={enabled:false,publicKey:''}
+  }
 }
 
 async function verificarRol(email){
@@ -243,6 +255,8 @@ window.doLogin=async()=>{
   err.style.display='none'
   const{error}=await supabase.auth.signInWithPassword({email,password:pass})
   if(error){err.textContent='Correo o contraseña incorrectos.';err.style.display='block';return}
+  currentUserEmail=email
+  await cargarConfigCulqi()
   await verificarRol(email)
 }
 
@@ -279,7 +293,9 @@ function renderPedidos(){
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
         <span class="ped-total">S/${parseFloat(p.total||0).toFixed(2)}</span>
         <span class="s-pill ${sC[p.estado]||'s-espera'}">${sL[p.estado]||p.estado}</span>
+        <span class="s-pill ${p.estado_pago==='pagado'?'s-listo':'s-espera'}">${p.estado_pago==='pagado'?'Pago aprobado':'Pago pendiente'}</span>
         <div class="btn-row">
+          ${p.estado_pago!=='pagado'?`<button class="act-btn btn-entregar" onclick="cobrarConCulqi('${p.id}')">💳 Cobrar Culqi</button>`:''}
           ${p.estado==='listo'?`<button class="act-btn btn-entregar" onclick="entregar('${p.id}')">✓ Entregar</button>`:''}
                         <button class="act-btn btn-editar" onclick="imprimirTicket('${p.id}')">🖨 Imprimir</button>
           <button class="act-btn btn-editar" onclick="abrirEditarModal('${p.id}')">Editar</button>
@@ -340,7 +356,7 @@ window.abrirCarrito=()=>{
       <button class="mi-btn" onclick="cambiarQty('${it.id}',1)">+</button>
       <span class="mi-price">S/${(parseFloat(it.precio)*it.qty).toFixed(2)}</span>
     </div>`).join('')}
-    <div class="total-row"><span>Total</span><span style="color:##B7E4C7">S/ ${subtotal().toFixed(2)}</span></div>
+    <div class="total-row"><span>Total</span><span style="color:#B7E4C7">S/ ${subtotal().toFixed(2)}</span></div>
     <input class="form-inp" type="text" id="m-nombre" placeholder="Nombre del cliente">
     <select class="form-inp" id="m-mesa"><option value="">Selecciona mesa</option><option value="Mesa 1">Mesa 1</option><option value="Mesa 2">Mesa 2</option><option value="Mesa 3">Mesa 3</option><option value="Mesa 4">Mesa 4</option><option value="Para llevar">Para llevar</option><option value="Delivery">Delivery</option></select>
     <input class="form-inp" type="text" id="m-nota" placeholder="Nota para cocina"><select class="form-inp" id="m-pago"><option value="">Método de pago</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta de crédito</option><option value="yape">Yape</option></select>
@@ -361,7 +377,7 @@ window.confirmarPedido=async()=>{
   const nota=document.getElementById('m-nota').value||''
   const items=Object.entries(cart).filter(([,q])=>q>0).map(([id,q])=>({...menuItems.find(m=>m.id==id),qty:q}))
   const total=subtotal()
-  const metodoPago=document.getElementById('m-pago').value||''; const atendidoPor=localStorage.getItem('ff58_nombre')||''; const{data:pedido}=await supabase.from('pedidos').insert([{cliente_nombre:nombre,mesa,estado:'espera',total,nota,metodo_pago:metodoPago||null,atendido_por:atendidoPor}]).select().single()
+  const metodoPago=document.getElementById('m-pago').value||''; const atendidoPor=localStorage.getItem('ff58_nombre')||''; const{data:pedido}=await supabase.from('pedidos').insert([{cliente_nombre:nombre,mesa,estado:'espera',total,nota,metodo_pago:metodoPago||null,atendido_por:atendidoPor,estado_pago:'pendiente'}]).select().single()
   if(pedido){
        await supabase.from('pedido_items').insert(items.map(it=>({pedido_id:pedido.id,menu_item_id:parseInt(it.id),nombre:it.nombre,cantidad:it.qty,precio_unit:parseFloat(it.precio)})))
   }
@@ -437,7 +453,7 @@ window.searchInMenu = (val) => {
         resDiv.innerHTML = filtered.map(m => `
             <div class="search-item-mini" onclick="addNewItemToEdit('${m.id}')">
                 <span>${m.nombre}</span>
-                <span style="color:##B7E4C7">S/${parseFloat(m.precio).toFixed(2)} +</span>
+                <span style="color:#B7E4C7">S/${parseFloat(m.precio).toFixed(2)} +</span>
             </div>
         `).join('');
     } else {
@@ -479,7 +495,9 @@ window.guardarEdicion=async()=>{
         estado: estadoVal,
         nota: document.getElementById('edit-nota').value,
         total: nuevoTotal,
-        metodo_pago: pagoVal||null
+        metodo_pago: pagoVal||null,
+        estado_pago: (pagoVal==='efectivo'||pagoVal==='yape') ? 'pagado' : 'pendiente',
+        fecha_pago: (pagoVal==='efectivo'||pagoVal==='yape') ? new Date().toISOString() : null
       }).eq('id', editId);
 
       await supabase.from('pedido_items').delete().eq('pedido_id', editId);
@@ -503,14 +521,78 @@ window.guardarEdicion=async()=>{
 
 window.entregar=async(id)=>{
   const p=pedidos.find(x=>String(x.id)===String(id))
-  if(!p?.metodo_pago){alert('Debes asignar un tipo de pago a este pedido antes de continuar. Usa "Editar" para seleccionarlo.');return}
+  if(!p?.metodo_pago){alert('Debes asignar un tipo de pago antes de entregar.');return}
+  if(p.metodo_pago==='tarjeta' && p.estado_pago!=='pagado'){
+    alert('El pago con tarjeta todavía no ha sido aprobado por Culqi.');return
+  }
   await supabase.from('pedidos').update({estado:'entregado'}).eq('id',id);await cargarPedidos()
 }
 window.eliminar=async(id)=>{
+  const p=pedidos.find(x=>String(x.id)===String(id))
+  if(p?.estado_pago==='pagado'){alert('No se puede eliminar un pedido pagado. Cancélalo desde administración y conserva el registro.');return}
   if(!confirm('¿Eliminar este pedido?'))return
   await supabase.from('pedido_items').delete().eq('pedido_id',id)
   await supabase.from('pedidos').delete().eq('id',id)
   await cargarPedidos()
+}
+
+window.cobrarConCulqi=async(id)=>{
+  const p=pedidos.find(x=>String(x.id)===String(id))
+  if(!p){alert('Pedido no encontrado.');return}
+  if(p.estado_pago==='pagado'){alert('Este pedido ya está pagado.');return}
+  if(!culqiConfig.enabled||!culqiConfig.publicKey){
+    alert('Culqi aún no está configurado. Agrega CULQI_PUBLIC_KEY y CULQI_PRIVATE_KEY en Vercel.');return
+  }
+  if(typeof window.CulqiCheckout!=='function'){
+    alert('No se pudo cargar Culqi Checkout. Verifica la conexión a internet.');return
+  }
+
+  pedidoEnCobro=p
+  const amount=Math.round(Number(p.total||0)*100)
+  const settings={title:'Gregorisa',currency:'PEN',amount}
+  const client={email:currentUserEmail||'caja@gregorisa.pe'}
+  const paymentMethods={tarjeta:true,yape:false,billetera:false,bancaMovil:false,agente:false,cuotealo:false}
+  const options={lang:'es',installments:true,modal:true,paymentMethods,paymentMethodsSort:['tarjeta']}
+  const appearance={
+    theme:'default',hiddenCulqiLogo:false,hiddenBannerContent:false,hiddenBanner:false,
+    hiddenToolBarAmount:false,hiddenEmail:false,menuType:'sidebar',buttonCardPayText:'Pagar',
+    defaultStyle:{bannerColor:'#2D6A4F',buttonBackground:'#2D6A4F',menuColor:'#2D6A4F',linksColor:'#2D6A4F',buttonTextColor:'#FFFFFF',priceColor:'#2D6A4F'}
+  }
+  culqiInstance=new window.CulqiCheckout(culqiConfig.publicKey,{settings,client,options,appearance})
+  culqiInstance.culqi=async()=>{
+    if(culqiInstance.token){
+      const tokenId=culqiInstance.token.id
+      culqiInstance.close()
+      await procesarPagoCulqi(tokenId)
+    }else{
+      const message=culqiInstance.error?.user_message||culqiInstance.error?.merchant_message||'No se pudo generar el pago.'
+      alert(message)
+    }
+  }
+  culqiInstance.open()
+}
+
+async function procesarPagoCulqi(sourceId){
+  if(!pedidoEnCobro)return
+  const pedidoId=pedidoEnCobro.id
+  try{
+    const {data:{session}}=await supabase.auth.getSession()
+    if(!session)throw new Error('Tu sesión venció. Inicia sesión nuevamente.')
+    const r=await fetch('/api/culqi-charge',{
+      method:'POST',
+      headers:{'Content-Type':'application/json',Authorization:'Bearer '+session.access_token},
+      body:JSON.stringify({pedidoId,sourceId})
+    })
+    const result=await r.json()
+    if(!r.ok)throw new Error(result.error||'El pago no pudo completarse.')
+    alert('Pago aprobado. Referencia: '+result.payment.reference)
+    await cargarPedidos()
+    const pagado=pedidos.find(x=>String(x.id)===String(pedidoId))||pedidoEnCobro
+    pedidoEnCobro=null
+    if(confirm('¿Deseas imprimir el ticket ahora?'))window.imprimirTicket(pagado.id)
+  }catch(e){
+    alert(e.message||'No se pudo procesar el pago.')
+  }
 }
 
 window.imprimirTicket=(id)=>{
@@ -535,6 +617,8 @@ window.imprimirTicket=(id)=>{
     +'<hr><table>'+itemsHtml+'</table><hr>'
     +'<table><tr><td class="tot">TOTAL</td><td class="tot" style="text-align:right;">S/'+parseFloat(p.total||0).toFixed(2)+'</td></tr></table>'
     +'<div class="info" style="margin-top:8px;">Tipo de pago: '+pagoTxt+'</div>'
+    +'<div class="info">Estado de pago: '+(p.estado_pago==='pagado'?'APROBADO':'PENDIENTE')+'</div>'
+    +(p.referencia_pago?'<div class="info">Referencia: '+p.referencia_pago+'</div>':'')
     +'<hr><div class="sub">¡Gracias por su compra!</div>'
     +'</body></html>'
   const w=window.open('','_blank','width=340,height=600')
