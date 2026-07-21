@@ -1,8 +1,8 @@
 module.exports = async (req, res) => {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return }
   try {
-    const SUPABASE_URL = 'https://rsebinhkyijetmfwnugl.supabase.co'
-    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZWJpbmhreWlqZXRtZndudWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0Mzk1NzEsImV4cCI6MjA5MzAxNTU3MX0.C4WlOxrG6ilhDfaMkFhtfl_HxLRXC2Pkf4gcpGZTouE'
+    const SUPABASE_URL = 'https://yxrhzqmdxcghrwqkdlow.supabase.co'
+        const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4cmh6cW1keGNnaHJ3cWtkbG93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDAxNTgsImV4cCI6MjEwMDIxNjE1OH0.oyvZb8vpBrlLQrmX8Ynpv8Yym_xbCBUHto6DsRmcSaM'
     const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
     if (!SERVICE_KEY) { res.status(500).json({ error: 'Falta configurar SUPABASE_SERVICE_ROLE_KEY en el servidor' }); return }
     const authHeader = req.headers.authorization || ''
