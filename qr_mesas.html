@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gregorisa — QR Mesas</title>
+<title>Dolchissimo — QR Mesas</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -37,7 +37,7 @@ h1{font-size:18px;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
 </style>
 </head>
 <body>
-<h1>🍽️ Gregorisa — Generador de QR para Mesas</h1>
+<h1>🍽️ Dolchissimo — Generador de QR para Mesas</h1>
 <div class="sub">Configura cuántas mesas tienes y haz clic en "Generar QR". Luego imprime esta página.</div>
 
 <div class="config-card">
@@ -48,7 +48,7 @@ h1{font-size:18px;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
     </div>
     <div class="field">
       <div class="label">URL del menú</div>
-      <input class="inp" type="text" id="menu-url" value="https://gregorisa.vercel.app/public/menu.html">
+      <input class="inp" type="text" id="menu-url" value="https://dolchissimo.vercel.app/public/menu.html">
     </div>
     <button class="gen-btn" onclick="generarQRs()">Generar QR →</button>
   </div>
@@ -65,7 +65,7 @@ h1{font-size:18px;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
 <script>
 function generarQRs(){
   const n=parseInt(document.getElementById('num-mesas').value)||10
-  const url=document.getElementById('menu-url').value||'https://gregorisa.vercel.app/public/menu.html'
+  const url=document.getElementById('menu-url').value||'https://dolchissimo.vercel.app/public/menu.html'
   const grid=document.getElementById('qr-grid')
   grid.innerHTML=''
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gregorisa — Mozo</title>
+<title>Dolchissimo — Mozo</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:100vh;}
@@ -112,7 +112,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
   <div class="auth-card">
     <div class="auth-logo">GR</div>
     <div class="auth-title">Acceso Mozo</div>
-    <div class="auth-sub">Gregorisa · Ingresa con tu cuenta</div>
+    <div class="auth-sub">Dolchissimo · Ingresa con tu cuenta</div>
     <div class="auth-err" id="auth-err"></div>
     <input class="auth-inp" type="email" id="auth-email" placeholder="correo@fastfood58.com">
     <input class="auth-inp" type="password" id="auth-pass" placeholder="Contraseña">
@@ -125,7 +125,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 <div class="header">
   <div style="display:flex;align-items:center;gap:10px;">
     <div class="logo-sq">5/8</div>
-    <div><div class="header-name">GREGORISA</div><div class="header-sub" id="mozo-sub">Mozo</div></div>
+    <div><div class="header-name">DOLCHISSIMO</div><div class="header-sub" id="mozo-sub">Mozo</div></div>
   </div>
   <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
 </div>
@@ -527,7 +527,7 @@ window.imprimirTicket=(id)=>{
   const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ticket #'+(p.numero||'-')+'</title>'
     +'<style>body{font-family:monospace;width:280px;margin:0 auto;padding:10px;color:#000;}h1{font-size:16px;text-align:center;margin:0 0 4px;}.sub{text-align:center;font-size:11px;margin-bottom:10px;}table{width:100%;border-collapse:collapse;font-size:12px;}td{padding:2px 0;}hr{border:none;border-top:1px dashed #000;margin:8px 0;}.tot{font-weight:bold;font-size:14px;}.info{font-size:12px;margin-bottom:4px;}@media print{body{width:100%;}}</style>'
     +'</head><body>'
-    +'<h1>GREGORISA</h1><div class="sub">Ticket de pedido</div>'
+    +'<h1>DOLCHISSIMO</h1><div class="sub">Ticket de pedido</div>'
     +'<div class="info">Pedido: #'+(p.numero||'-')+'</div>'
     +'<div class="info">Cliente: '+(p.cliente_nombre||'-')+'</div>'
     +'<div class="info">Mesa: '+(p.mesa||'-')+'</div>'

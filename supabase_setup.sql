@@ -1,7 +1,7 @@
 -- ============================================================
---  GREGORISA — Sistema de Pedidos
+--  DOLCHISSIMO — Sistema de Pedidos
 --  Supabase Setup — Tablas del sistema (igual que Fast Food 58)
---  Ejecutar en: SQL Editor de tu proyecto Gregorisa en Supabase
+--  Ejecutar en: SQL Editor de tu proyecto Dolchissimo en Supabase
 -- ============================================================
 
 -- 1. USUARIOS DEL SISTEMA
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS pedido_items (
 );
 
 -- ============================================================
---  CARTA DE GREGORISA (57 productos)
+--  CARTA DE DOLCHISSIMO (57 productos)
 -- ============================================================
 
 INSERT INTO menu_items (categoria, nombre, descripcion, precio, es_nuevo, emoji) VALUES
@@ -148,9 +148,9 @@ ALTER PUBLICATION supabase_realtime ADD TABLE pedido_items;
 --  con el email que quieras, luego ejecuta este INSERT:
 -- ============================================================
 -- INSERT INTO usuarios (email, nombre, rol, activo) VALUES
---   ('admin@gregorisa.com', 'Administrador', 'admin', TRUE),
---   ('mozo@gregorisa.com',  'Mozo 1',        'mozo',  TRUE),
---   ('cocina@gregorisa.com','Cocina',         'cocina',TRUE);
+--   ('admin@dolchissimo.com', 'Administrador', 'admin', TRUE),
+--   ('mozo@dolchissimo.com',  'Mozo 1',        'mozo',  TRUE),
+--   ('cocina@dolchissimo.com','Cocina',         'cocina',TRUE);
 
 -- ============================================================
 --  NOTAS DE ORIGEN DEL CAFÉ

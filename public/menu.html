@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gregorisa — Carta</title>
+<title>Dolchissimo — Carta</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:100vh;}
@@ -119,7 +119,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
     <div class="v-err" id="err-mesa">Indica tu mesa o tipo de atención</div>
 
     <button class="v-btn" onclick="verificarCliente()">Ver carta y pedir →</button>
-    <div class="v-note">🔒 Tus datos son confidenciales y solo se usan para procesar tu pedido en Gregorisa.</div>
+    <div class="v-note">🔒 Tus datos son confidenciales y solo se usan para procesar tu pedido en Dolchissimo.</div>
   </div>
 </div>
 
@@ -127,7 +127,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 <nav class="nav">
   <div style="display:flex;align-items:center;">
     <div class="logo-box">GR</div>
-    <span class="nav-name">GREGORISA</span>
+    <span class="nav-name">DOLCHISSIMO</span>
   </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <span class="nav-user" id="nav-user" style="display:none;"></span>
@@ -351,7 +351,7 @@ window.confirmarPedido=async()=>{
 
   const num='#'+(pedido?.numero||Math.floor(Math.random()*900+100))
   const hora=new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
-  const waText=encodeURIComponent(`*Pedido Gregorisa ${num}*\n\n${items.map(i=>`${i.qty}x ${i.nombre} — S/${(parseFloat(i.precio)*i.qty).toFixed(2)}`).join('\n')}\n\n*Total: S/${total.toFixed(2)}*\nCliente: ${clienteNombre}\nMesa: ${clienteMesa}${nota?'\nNota: '+nota:''}`)
+  const waText=encodeURIComponent(`*Pedido Dolchissimo ${num}*\n\n${items.map(i=>`${i.qty}x ${i.nombre} — S/${(parseFloat(i.precio)*i.qty).toFixed(2)}`).join('\n')}\n\n*Total: S/${total.toFixed(2)}*\nCliente: ${clienteNombre}\nMesa: ${clienteMesa}${nota?'\nNota: '+nota:''}`)
 
   document.getElementById('modal-content').innerHTML=`
     <div class="success-wrap">
