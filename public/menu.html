@@ -344,7 +344,7 @@ window.confirmarPedido=async()=>{
 
   if(!error&&pedido){
     await supabase.from('pedido_items').insert(items.map(it=>({
-      pedido_id:pedido.id,menu_item_id:it.id,nombre:it.nombre,
+      pedido_id:pedido.id,menu_item_id:it.id,nombre:it.nombre,categoria:it.categoria,
       cantidad:it.qty,precio_unit:parseFloat(it.precio)
     })))
   }

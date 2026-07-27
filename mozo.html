@@ -363,7 +363,7 @@ window.confirmarPedido=async()=>{
   const total=subtotal()
   const metodoPago=document.getElementById('m-pago').value||''; const atendidoPor=localStorage.getItem('ff58_nombre')||''; const{data:pedido}=await supabase.from('pedidos').insert([{cliente_nombre:nombre,mesa,estado:'espera',total,nota,metodo_pago:metodoPago||null,atendido_por:atendidoPor}]).select().single()
   if(pedido){
-       await supabase.from('pedido_items').insert(items.map(it=>({pedido_id:pedido.id,menu_item_id:parseInt(it.id),nombre:it.nombre,cantidad:it.qty,precio_unit:parseFloat(it.precio)})))
+       await supabase.from('pedido_items').insert(items.map(it=>({pedido_id:pedido.id,menu_item_id:parseInt(it.id),nombre:it.nombre,categoria:it.categoria,cantidad:it.qty,precio_unit:parseFloat(it.precio)})))
   }
   cart={}
   document.getElementById('modal-carrito').style.display='none'
@@ -455,7 +455,7 @@ window.addNewItemToEdit = (menuId) => {
         itemsEnEdicion.push({
             pedido_id: editId,
             menu_item_id: plato.id,
-            nombre: plato.nombre,
+            nombre: plato.nombre, categoria: plato.categoria,
             cantidad: 1,
             precio_unit: parseFloat(plato.precio), descuento_pct: 0
         });
@@ -487,7 +487,7 @@ window.guardarEdicion=async()=>{
       if (itemsEnEdicion.length > 0) {
         await supabase.from('pedido_items').insert(itemsEnEdicion.map(it => ({
           pedido_id: editId,
-          menu_item_id: it.menu_item_id,
+          menu_item_id: it.menu_item_id, categoria: it.categoria,
           nombre: it.nombre,
           cantidad: it.cantidad,
           precio_unit: it.precio_unit, descuento_pct: it.descuento_pct||0

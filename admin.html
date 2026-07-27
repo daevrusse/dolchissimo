@@ -814,7 +814,7 @@ function renderPedidos(){
       <span class="ped-num">#${p.numero||'—'}</span>
       <div class="ped-info">
         <div class="ped-nombre">${p.cliente_nombre||'—'} · ${p.mesa||'—'}</div>
-        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}`).join(' · ')}</div>
+        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}${i.categoria?' ('+i.categoria+')':''}`).join(' · ')}</div>
         ${p.nota?`<div class="ped-nota">📝 ${p.nota}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
@@ -849,7 +849,7 @@ function renderPedidos(){
   const fechaTxt=fecha.toLocaleDateString('es-PE')+' '+fecha.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
   const itemsHtml=(p.pedido_items||[]).map(it=>{
     const sub=(it.cantidad*(it.precio_unit||0)*(1-(it.descuento_pct||0)/100))
-    return '<tr><td>'+it.cantidad+'x '+it.nombre+'</td><td style="text-align:right;">S/'+sub.toFixed(2)+'</td></tr>'
+    return '<tr><td>'+it.cantidad+'x '+it.nombre+(it.categoria?' ('+it.categoria+')':'')+'</td><td style="text-align:right;">S/'+sub.toFixed(2)+'</td></tr>'
   }).join('')
   const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ticket #'+(p.numero||'-')+'</title>'
     +'<style>body{font-family:monospace;width:280px;margin:0 auto;padding:10px;color:#000;}h1{font-size:16px;text-align:center;margin:0 0 4px;}.sub{text-align:center;font-size:11px;margin-bottom:10px;}table{width:100%;border-collapse:collapse;font-size:12px;}td{padding:2px 0;}hr{border:none;border-top:1px dashed #000;margin:8px 0;}.tot{font-weight:bold;font-size:14px;}.info{font-size:12px;margin-bottom:4px;}@media print{body{width:100%;}}</style>'
@@ -957,7 +957,7 @@ window.addNewItemToEdit=(menuId)=>{
   const plato=menuItems.find(m=>String(m.id)===String(menuId))
   const existe=itemsEnEdicion.find(it=>String(it.menu_item_id)===String(menuId))
   if(existe)existe.cantidad+=1
-  else itemsEnEdicion.push({pedido_id:editId,menu_item_id:plato.id,nombre:plato.nombre,cantidad:1,precio_unit:parseFloat(plato.precio),descuento_pct:0})
+  else itemsEnEdicion.push({pedido_id:editId,menu_item_id:plato.id,nombre:plato.nombre,categoria:plato.categoria,cantidad:1,precio_unit:parseFloat(plato.precio),descuento_pct:0})
   renderItemsEdicion()
   document.getElementById('edit-search-results').style.display='none'
   document.getElementById('edit-search-inp').value=''
@@ -971,7 +971,7 @@ window.guardarEdicion=async()=>{
   try{
     await supabase.from('pedidos').update({estado:document.getElementById('modal-estado').value,nota:document.getElementById('modal-nota').value,total:nuevoTotal,metodo_pago:document.getElementById('modal-pago').value||null}).eq('id',editId)
     await supabase.from('pedido_items').delete().eq('pedido_id',editId)
-    if(itemsEnEdicion.length>0)await supabase.from('pedido_items').insert(itemsEnEdicion.map(it=>({pedido_id:editId,menu_item_id:it.menu_item_id,nombre:it.nombre,cantidad:it.cantidad,precio_unit:it.precio_unit,descuento_pct:it.descuento_pct||0})))
+    if(itemsEnEdicion.length>0)await supabase.from('pedido_items').insert(itemsEnEdicion.map(it=>({pedido_id:editId,menu_item_id:it.menu_item_id,nombre:it.nombre,categoria:it.categoria,cantidad:it.cantidad,precio_unit:it.precio_unit,descuento_pct:it.descuento_pct||0})))
     cerrarModal();await cargarTodo()
   }catch(e){alert('Error al actualizar')}
 }

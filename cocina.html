@@ -166,7 +166,7 @@ function render(){
       </div>
       ${p.nota?`<div class="c-nota">📝 ${p.nota}</div>`:''}
       <div class="c-items">
-        ${items.map(i=>`<div class="c-item"><span class="c-qty">${i.cantidad}x</span>${i.nombre}</div>`).join('')}
+        ${items.map(i=>`<div class="c-item"><span class="c-qty">${i.cantidad}x</span>${i.nombre}${i.categoria?' ('+i.categoria+')':''}</div>`).join('')}
       </div>
       <div class="c-actions">
         ${p.estado==='espera'?`<button class="c-btn btn-iniciar" onclick="avanzar('${p.id}','cocina')">▶ Empezar a preparar</button>`:''}
