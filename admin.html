@@ -832,7 +832,7 @@ function renderPedidos(){
       <span class="ped-num">#${p.numero||'—'}</span>
       <div class="ped-info">
         <div class="ped-nombre">${p.cliente_nombre||'—'} · ${p.mesa||'—'}</div>
-        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}`).join(', ')}</div>
+        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}${i.categoria?' ('+i.categoria+')':''}`).join(', ')}</div>
       </div>
       <div style="text-align:right;">
         <span class="ped-total">S/${parseFloat(p.total||0).toFixed(2)}</span><br>
