@@ -124,7 +124,7 @@ body{background:#111;font-family:system-ui,sans-serif;color:#e2e8f0;min-height:1
 <div id="app" style="display:none;">
 <div class="header">
   <div style="display:flex;align-items:center;gap:10px;">
-    <div class="logo-sq">5/8</div>
+    <div class="logo-sq">🍦</div>
     <div><div class="header-name">DOLCHISSIMO</div><div class="header-sub" id="mozo-sub">Mozo</div></div>
   </div>
   <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
@@ -273,7 +273,7 @@ function renderPedidos(){
       <span class="ped-num">#${p.numero||'—'}</span>
       <div class="ped-info">
         <div class="ped-nombre">${p.cliente_nombre||'Cliente'} · ${p.mesa||'—'}</div>
-        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}`).join(', ')}</div>
+        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}${i.categoria?' ('+i.categoria+')':''}`).join(', ')}</div>
         ${p.nota?`<div class="ped-nota">📝 ${p.nota}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
@@ -564,7 +564,7 @@ function renderHistorial(){
       <span class="ped-num">#${p.numero||'—'}</span>
       <div class="ped-info">
         <div class="ped-nombre">${p.cliente_nombre||'Cliente'} · ${p.mesa||'—'}</div>
-        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}`).join(', ')}</div>
+        <div class="ped-items">${(p.pedido_items||[]).map(i=>`${i.cantidad}x ${i.nombre}${i.categoria?' ('+i.categoria+')':''}`).join(', ')}</div>
         <div class="ped-items">${new Date(p.created_at).toLocaleString('es-PE')}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
